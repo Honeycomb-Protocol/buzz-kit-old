@@ -1,0 +1,23 @@
+[package]
+name = "hpl-buzz-guild-kit"
+description = "Honeycomb protocol library guild kit program"
+author = ["Sultan Nadeem <sultanndilaram@gmail.com>"]
+version = "0.0.1"
+edition = "2021"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "hpl_buzz_guild_kit"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = "0.26.0"
+hpl-utils = "0.1.0"
+hpl-hive-control = { version="0.0.18", features = ["cpi"] }
