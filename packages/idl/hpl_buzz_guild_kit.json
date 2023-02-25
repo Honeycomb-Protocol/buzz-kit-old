@@ -1,0 +1,359 @@
+{
+  "version": "0.0.1",
+  "name": "hpl_buzz_guild_kit",
+  "instructions": [
+    {
+      "name": "createGuildKit",
+      "accounts": [
+        {
+          "name": "guildKit",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "GuildKit state account"
+          ]
+        },
+        {
+          "name": "project",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "HIVE CONTROL"
+          ]
+        },
+        {
+          "name": "delegateAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true,
+          "docs": [
+            "The wallet that holds the authority over the assembler"
+          ]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "The wallet that pays for the rent"
+          ]
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "SYSTEM PROGRAM"
+          ]
+        },
+        {
+          "name": "rentSysvar",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "RENT SYSVAR"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "SPL TOKEN PROGRAM"
+          ]
+        },
+        {
+          "name": "hiveControl",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "HIVE CONTROL PROGRAM"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "createGuild",
+      "accounts": [
+        {
+          "name": "guildId",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "guild",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Guild state account"
+          ]
+        },
+        {
+          "name": "guildKit",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "GUILD KIT"
+          ]
+        },
+        {
+          "name": "project",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "HIVE CONTROL"
+          ]
+        },
+        {
+          "name": "addressContainer",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Address container that stores the mint addresss of the collections"
+          ]
+        },
+        {
+          "name": "cheifAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "membershipLock",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "PDA FOR verifying membbership & locking mebership"
+          ]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "The wallet that pays for the rent"
+          ]
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "SYSTEM PROGRAM"
+          ]
+        },
+        {
+          "name": "rentSysvar",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "RENT SYSVAR"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "SPL TOKEN PROGRAM"
+          ]
+        },
+        {
+          "name": "hiveControl",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "HIVE CONTROL PROGRAM"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": "CreateGuildArgs"
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Guild",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "guildId",
+            "docs": [
+              "the unique identifier for this guild"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "project",
+            "docs": [
+              "the key to identify which project does it belong to"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "name",
+            "docs": [
+              "the name of the guild"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "members",
+            "docs": [
+              "the members who are part of the guild"
+            ],
+            "type": {
+              "vec": {
+                "defined": "Member"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MembershipLock",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "locked",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GuildKit",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "project",
+            "docs": [
+              "the key to identify which project does it belong to"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "bump of seeds"
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "CreateGuildArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "chiefRefrence",
+            "type": {
+              "defined": "IndexedReference"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Member",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "role",
+            "type": {
+              "defined": "MemberRole"
+            }
+          },
+          {
+            "name": "reference",
+            "type": {
+              "defined": "IndexedReference"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "IndexedReference",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "addressContainerIndex",
+            "type": "u8"
+          },
+          {
+            "name": "indexInContainer",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MemberRole",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Chief"
+          },
+          {
+            "name": "Member"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "Overflow",
+      "msg": "Opertaion overflowed"
+    },
+    {
+      "code": 6001,
+      "name": "MemberRefrenceVerificationFailed",
+      "msg": "the member refrence is not valid"
+    }
+  ],
+  "metadata": {
+    "address": "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS",
+    "origin": "anchor",
+    "binaryVersion": "0.26.0",
+    "libVersion": "0.26.0"
+  }
+}
