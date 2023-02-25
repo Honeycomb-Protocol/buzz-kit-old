@@ -172,14 +172,6 @@
           "docs": [
             "SPL TOKEN PROGRAM"
           ]
-        },
-        {
-          "name": "hiveControl",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "HIVE CONTROL PROGRAM"
-          ]
         }
       ],
       "args": [
@@ -206,6 +198,13 @@
             "type": "publicKey"
           },
           {
+            "name": "bump",
+            "docs": [
+              "bump of seeds"
+            ],
+            "type": "u8"
+          },
+          {
             "name": "project",
             "docs": [
               "the key to identify which project does it belong to"
@@ -229,6 +228,24 @@
                 "defined": "Member"
               }
             }
+          },
+          {
+            "name": "visibility",
+            "docs": [
+              "the visibility of the guild"
+            ],
+            "type": {
+              "defined": "GuildVisibility"
+            }
+          },
+          {
+            "name": "joiningCriteria",
+            "docs": [
+              "the criteria for joining the guild"
+            ],
+            "type": {
+              "defined": "JoiningCriteria"
+            }
           }
         ]
       }
@@ -241,6 +258,48 @@
           {
             "name": "locked",
             "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Invitation",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "invitationId",
+            "docs": [
+              "the key to identify for the invitation"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "guild",
+            "docs": [
+              "the key to identify which guild does it belong to"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "invitedBy",
+            "docs": [
+              "the key to identify which chief does it belong to"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "invited",
+            "docs": [
+              "the key to identify which member does it belong to"
+            ],
+            "type": {
+              "defined": "IndexedReference"
+            }
           }
         ]
       }
@@ -283,6 +342,126 @@
             "type": {
               "defined": "IndexedReference"
             }
+          },
+          {
+            "name": "visibility",
+            "type": {
+              "defined": "GuildVisibility"
+            }
+          },
+          {
+            "name": "joiningCriteria",
+            "type": {
+              "defined": "JoiningCriteria"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "UpdateGuildNameArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "chiefRefrence",
+            "type": {
+              "defined": "IndexedReference"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "option": "string"
+            }
+          },
+          {
+            "name": "visibility",
+            "type": {
+              "option": {
+                "defined": "GuildVisibility"
+              }
+            }
+          },
+          {
+            "name": "joiningCriteria",
+            "type": {
+              "option": {
+                "defined": "JoiningCriteria"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "UpdateMemberRoleArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "chiefRefrence",
+            "type": {
+              "defined": "IndexedReference"
+            }
+          },
+          {
+            "name": "memberRefrence",
+            "type": {
+              "defined": "IndexedReference"
+            }
+          },
+          {
+            "name": "role",
+            "type": {
+              "defined": "MemberRole"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CreateInvitationArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "chiefRefrence",
+            "type": {
+              "defined": "IndexedReference"
+            }
+          },
+          {
+            "name": "newMemberRefrence",
+            "type": {
+              "defined": "IndexedReference"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "AcceptInvitationArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "chiefRefrence",
+            "type": {
+              "defined": "IndexedReference"
+            }
+          },
+          {
+            "name": "newMemberRefrence",
+            "type": {
+              "defined": "IndexedReference"
+            }
+          },
+          {
+            "name": "role",
+            "type": {
+              "defined": "MemberRole"
+            }
           }
         ]
       }
@@ -324,6 +503,20 @@
       }
     },
     {
+      "name": "GuildVisibility",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Public"
+          },
+          {
+            "name": "Private"
+          }
+        ]
+      }
+    },
+    {
       "name": "MemberRole",
       "type": {
         "kind": "enum",
@@ -333,6 +526,23 @@
           },
           {
             "name": "Member"
+          }
+        ]
+      }
+    },
+    {
+      "name": "JoiningCriteria",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Anyone"
+          },
+          {
+            "name": "Invitation"
+          },
+          {
+            "name": "Requested"
           }
         ]
       }
@@ -348,6 +558,16 @@
       "code": 6001,
       "name": "MemberRefrenceVerificationFailed",
       "msg": "the member refrence is not valid"
+    },
+    {
+      "code": 6002,
+      "name": "MemberNotFound",
+      "msg": "the member refrence can not be found in the guild"
+    },
+    {
+      "code": 6003,
+      "name": "ChiefNotFound",
+      "msg": "the chief refrence can not be found in the guild"
     }
   ],
   "metadata": {

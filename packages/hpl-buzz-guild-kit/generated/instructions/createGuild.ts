@@ -47,7 +47,6 @@ export const createGuildStruct = new beet.FixableBeetArgsStruct<
  * @property [_writable_, **signer**] payer
  * @property [_writable_] vault
  * @property [] rentSysvar
- * @property [] hiveControl
  * @category Instructions
  * @category CreateGuild
  * @category generated
@@ -65,7 +64,6 @@ export type CreateGuildInstructionAccounts = {
   systemProgram?: web3.PublicKey
   rentSysvar: web3.PublicKey
   tokenProgram?: web3.PublicKey
-  hiveControl: web3.PublicKey
   anchorRemainingAccounts?: web3.AccountMeta[]
 }
 
@@ -150,11 +148,6 @@ export function createCreateGuildInstruction(
     },
     {
       pubkey: accounts.tokenProgram ?? splToken.TOKEN_PROGRAM_ID,
-      isWritable: false,
-      isSigner: false,
-    },
-    {
-      pubkey: accounts.hiveControl,
       isWritable: false,
       isSigner: false,
     },

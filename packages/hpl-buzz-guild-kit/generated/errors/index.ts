@@ -58,6 +58,46 @@ createErrorFromNameLookup.set(
 )
 
 /**
+ * MemberNotFound: 'the member refrence can not be found in the guild'
+ *
+ * @category Errors
+ * @category generated
+ */
+export class MemberNotFoundError extends Error {
+  readonly code: number = 0x1772
+  readonly name: string = 'MemberNotFound'
+  constructor() {
+    super('the member refrence can not be found in the guild')
+    if (typeof Error.captureStackTrace === 'function') {
+      Error.captureStackTrace(this, MemberNotFoundError)
+    }
+  }
+}
+
+createErrorFromCodeLookup.set(0x1772, () => new MemberNotFoundError())
+createErrorFromNameLookup.set('MemberNotFound', () => new MemberNotFoundError())
+
+/**
+ * ChiefNotFound: 'the chief refrence can not be found in the guild'
+ *
+ * @category Errors
+ * @category generated
+ */
+export class ChiefNotFoundError extends Error {
+  readonly code: number = 0x1773
+  readonly name: string = 'ChiefNotFound'
+  constructor() {
+    super('the chief refrence can not be found in the guild')
+    if (typeof Error.captureStackTrace === 'function') {
+      Error.captureStackTrace(this, ChiefNotFoundError)
+    }
+  }
+}
+
+createErrorFromCodeLookup.set(0x1773, () => new ChiefNotFoundError())
+createErrorFromNameLookup.set('ChiefNotFound', () => new ChiefNotFoundError())
+
+/**
  * Attempts to resolve a custom program error from the provided error code.
  * @category Errors
  * @category generated

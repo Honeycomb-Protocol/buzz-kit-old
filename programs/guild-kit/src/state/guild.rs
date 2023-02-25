@@ -56,7 +56,7 @@ pub struct Member {
     pub reference: IndexedReference,
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Debug)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Debug, Default)]
 pub struct IndexedReference {
     pub address_container_index: u8,
     pub index_in_container: u8,

@@ -1,5 +1,3 @@
-use anchor_lang::solana_program::instruction;
-
 use crate::errors::ErrorCode;
 use {
     crate::state::*,
@@ -9,28 +7,28 @@ use {
 };
 
 #[derive(Accounts)]
-#[instruction(args: CreateInvitationArgs)]
-pub struct CreateInvitation<'info> {
+#[instruction(args: CreateRequestArgs)]
+pub struct CreateRequest<'info> {
     /// Unique identifier for the guild
     /// CHECK: This is not dangerous because we don't read or write from this account
-    pub invitation_id: AccountInfo<'info>,
+    pub request_id: AccountInfo<'info>,
 
     /// guild state account
     #[account(mut)]
     pub guild: Box<Account<'info, Guild>>,
 
-    /// Invitation state account
+    /// Request state account
     #[account(
         init, payer = payer,
-        space = Invitation::LEN,
+        space = Request::LEN,
         seeds = [
-            b"invitation".as_ref(),
+            b"request".as_ref(),
             guild.key().as_ref(),
-            invitation_id.key().as_ref()
+            request_id.key().as_ref()
         ],
         bump
     )]
-    pub invitation: Box<Account<'info, Invitation>>,
+    pub request: Box<Account<'info, Request>>,
 
     /// PROJECT
     #[account(
@@ -38,21 +36,6 @@ pub struct CreateInvitation<'info> {
         constraint = project.key() == guild.project
     )]
     pub project: Box<Account<'info, Project>>,
-
-    /// Address container that stores the mint addresss of the collections
-    #[account(
-        seeds = [
-            b"address_container".as_ref(),
-            format!("{:?}", AddressContainerRole::ProjectMints).as_bytes(),
-            project.key().as_ref(), &[args.chief_refrence.address_container_index
-        ]],
-        bump = chief_address_container.bump
-    )]
-    pub chief_address_container: Account<'info, AddressContainer>,
-
-    /// the token account of the chief
-    #[account(constraint = cheif_account.owner == payer.key() && cheif_account.amount >= 0 as u64)]
-    pub cheif_account: Account<'info, TokenAccount>,
 
     /// Address container that stores the mint addresss of the collections
     #[account(
@@ -68,6 +51,11 @@ pub struct CreateInvitation<'info> {
     /// Verify the owner of the mint
     #[account(mut, constraint= member_account.amount > 0 as u64)]
     pub member_account: Account<'info, TokenAccount>,
+
+    /// the chief of the guild
+    /// CHECK: This is not dangerous because we don't read or write from this account
+    #[account(mut)]
+    pub member: AccountInfo<'info>,
 
     /// the payer of the transaction
     #[account(mut)]
@@ -85,32 +73,16 @@ pub struct CreateInvitation<'info> {
 }
 
 #[derive(AnchorDeserialize, AnchorSerialize, Clone, Debug, PartialEq)]
-pub struct CreateInvitationArgs {
-    pub chief_refrence: IndexedReference,
+pub struct CreateRequestArgs {
     pub new_member_refrence: IndexedReference,
 }
-pub fn create_invitation(ctx: Context<CreateInvitation>, args: CreateInvitationArgs) -> Result<()> {
-    let invitation = &mut ctx.accounts.invitation;
+pub fn create_request(ctx: Context<CreateRequest>, args: CreateRequestArgs) -> Result<()> {
+    let request = &mut ctx.accounts.request;
     let guild = &mut ctx.accounts.guild;
-
-    /// CHIEF & MEMBER ACCOUNTS & ADDRESS CONTAINERS
-    let chief_account = &ctx.accounts.cheif_account;
+    let member = &ctx.accounts.member;
     let member_account = &ctx.accounts.member_account;
     let chief_address_container = &ctx.accounts.chief_address_container;
     let member_address_container = &ctx.accounts.member_address_container;
-
-    guild
-        .members
-        .iter()
-        .find(|member| member.reference == args.chief_refrence && member.role == MemberRole::Chief)
-        .ok_or(ErrorCode::ChiefNotFound)?;
-
-    // Check if chief reference is in the address container
-    if chief_address_container.addresses[args.chief_refrence.address_container_index as usize]
-        != chief_account.mint
-    {
-        return Err(ErrorCode::ChiefNotFound.into());
-    }
 
     // Check if member reference is in the address container
     if member_address_container.addresses[args.new_member_refrence.address_container_index as usize]
@@ -120,14 +92,17 @@ pub fn create_invitation(ctx: Context<CreateInvitation>, args: CreateInvitationA
     }
 
     // CREATING INVITATION
+    request.guild = guild.key();
+    request.bump = ctx.bumps["request"];
+    request.invited = member.key();
 
     Ok(())
 }
 
 // ACCEPT INVITATION INSTRUCTION
 #[derive(Accounts)]
-#[instruction(args: AcceptInvitationArgs)]
-pub struct AcceptInvitation<'info> {
+#[instruction(args: AcceptRequestArgs)]
+pub struct AcceptRequest<'info> {
     /// Guild state account
     #[account(mut)]
     pub guild: Box<Account<'info, Guild>>,
@@ -140,18 +115,8 @@ pub struct AcceptInvitation<'info> {
     pub project: Box<Account<'info, Project>>,
 
     /// Address container that stores the mint addresss of the collections
-    #[account(
-        seeds = [
-            b"address_container".as_ref(),
-            format!("{:?}", AddressContainerRole::ProjectMints).as_bytes(),
-            project.key().as_ref(), &[args.chief_refrence.address_container_index
-        ]],
-        bump = chief_address_container.bump
-    )]
-    pub chief_address_container: Account<'info, AddressContainer>,
-
-    #[account(constraint = cheif_account.owner == payer.key() && cheif_account.amount >= 0 as u64)]
-    pub cheif_account: Account<'info, TokenAccount>,
+    #[account(mut, close = member)]
+    pub request: Box<Account<'info, Request>>,
 
     /// Address container that stores the mint addresss of the collections
     #[account(
@@ -167,6 +132,11 @@ pub struct AcceptInvitation<'info> {
     /// Verify the owner of the mint
     #[account(mut, constraint= member_account.amount > 0 as u64)]
     pub member_account: Account<'info, TokenAccount>,
+
+    /// the member that requested
+    /// CHECK: This is not dangerous because we don't read or write from this account
+    #[account(mut)]
+    pub member: AccountInfo<'info>,
 
     /// PDA FOR verifying membership & locking mebership
     #[account(
@@ -199,34 +169,18 @@ pub struct AcceptInvitation<'info> {
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
-pub struct AcceptInvitationArgs {
+pub struct AcceptRequestArgs {
     pub chief_refrence: IndexedReference,
     pub new_member_refrence: IndexedReference,
     pub role: MemberRole,
 }
 
 /// Add a member to a guild
-pub fn add_member(ctx: Context<AcceptInvitation>, args: AcceptInvitationArgs) -> Result<()> {
+pub fn add_member(ctx: Context<AcceptRequest>, args: AcceptRequestArgs) -> Result<()> {
     let guild = &mut ctx.accounts.guild;
-    let chief_account = &ctx.accounts.cheif_account;
+    let request = &mut ctx.accounts.request;
     let member_account = &ctx.accounts.member_account;
-    let chief_address_container = &ctx.accounts.chief_address_container;
     let member_address_container = &ctx.accounts.member_address_container;
-
-    // Check if the chief reference is valid
-
-    guild
-        .members
-        .iter()
-        .find(|member| member.reference == args.chief_refrence && member.role == MemberRole::Chief)
-        .ok_or(ErrorCode::ChiefNotFound)?;
-
-    // Check if chief reference is in the address container
-    if chief_address_container.addresses[args.chief_refrence.address_container_index as usize]
-        != chief_account.mint
-    {
-        return Err(ErrorCode::ChiefNotFound.into());
-    }
 
     // Check if member reference is in the address container
     if member_address_container.addresses[args.new_member_refrence.address_container_index as usize]

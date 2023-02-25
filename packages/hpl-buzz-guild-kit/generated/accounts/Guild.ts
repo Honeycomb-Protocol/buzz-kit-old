@@ -9,6 +9,8 @@ import * as web3 from '@solana/web3.js'
 import * as beetSolana from '@metaplex-foundation/beet-solana'
 import * as beet from '@metaplex-foundation/beet'
 import { Member, memberBeet } from '../types/Member'
+import { GuildVisibility, guildVisibilityBeet } from '../types/GuildVisibility'
+import { JoiningCriteria, joiningCriteriaBeet } from '../types/JoiningCriteria'
 
 /**
  * Arguments used to create {@link Guild}
@@ -17,9 +19,12 @@ import { Member, memberBeet } from '../types/Member'
  */
 export type GuildArgs = {
   guildId: web3.PublicKey
+  bump: number
   project: web3.PublicKey
   name: string
   members: Member[]
+  visibility: GuildVisibility
+  joiningCriteria: JoiningCriteria
 }
 
 export const guildDiscriminator = [74, 176, 57, 164, 195, 188, 156, 237]
@@ -33,16 +38,27 @@ export const guildDiscriminator = [74, 176, 57, 164, 195, 188, 156, 237]
 export class Guild implements GuildArgs {
   private constructor(
     readonly guildId: web3.PublicKey,
+    readonly bump: number,
     readonly project: web3.PublicKey,
     readonly name: string,
-    readonly members: Member[]
+    readonly members: Member[],
+    readonly visibility: GuildVisibility,
+    readonly joiningCriteria: JoiningCriteria
   ) {}
 
   /**
    * Creates a {@link Guild} instance from the provided args.
    */
   static fromArgs(args: GuildArgs) {
-    return new Guild(args.guildId, args.project, args.name, args.members)
+    return new Guild(
+      args.guildId,
+      args.bump,
+      args.project,
+      args.name,
+      args.members,
+      args.visibility,
+      args.joiningCriteria
+    )
   }
 
   /**
@@ -151,9 +167,13 @@ export class Guild implements GuildArgs {
   pretty() {
     return {
       guildId: this.guildId.toBase58(),
+      bump: this.bump,
       project: this.project.toBase58(),
       name: this.name,
       members: this.members,
+      visibility: 'GuildVisibility.' + GuildVisibility[this.visibility],
+      joiningCriteria:
+        'JoiningCriteria.' + JoiningCriteria[this.joiningCriteria],
     }
   }
 }
@@ -171,9 +191,12 @@ export const guildBeet = new beet.FixableBeetStruct<
   [
     ['accountDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
     ['guildId', beetSolana.publicKey],
+    ['bump', beet.u8],
     ['project', beetSolana.publicKey],
     ['name', beet.utf8String],
     ['members', beet.array(memberBeet)],
+    ['visibility', guildVisibilityBeet],
+    ['joiningCriteria', joiningCriteriaBeet],
   ],
   Guild.fromArgs,
   'Guild'

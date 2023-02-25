@@ -9,24 +9,24 @@ import * as beet from '@metaplex-foundation/beet'
 import { IndexedReference, indexedReferenceBeet } from './IndexedReference'
 import { GuildVisibility, guildVisibilityBeet } from './GuildVisibility'
 import { JoiningCriteria, joiningCriteriaBeet } from './JoiningCriteria'
-export type CreateGuildArgs = {
-  name: string
+export type UpdateGuildNameArgs = {
   chiefRefrence: IndexedReference
-  visibility: GuildVisibility
-  joiningCriteria: JoiningCriteria
+  name: beet.COption<string>
+  visibility: beet.COption<GuildVisibility>
+  joiningCriteria: beet.COption<JoiningCriteria>
 }
 
 /**
  * @category userTypes
  * @category generated
  */
-export const createGuildArgsBeet =
-  new beet.FixableBeetArgsStruct<CreateGuildArgs>(
+export const updateGuildNameArgsBeet =
+  new beet.FixableBeetArgsStruct<UpdateGuildNameArgs>(
     [
-      ['name', beet.utf8String],
       ['chiefRefrence', indexedReferenceBeet],
-      ['visibility', guildVisibilityBeet],
-      ['joiningCriteria', joiningCriteriaBeet],
+      ['name', beet.coption(beet.utf8String)],
+      ['visibility', beet.coption(guildVisibilityBeet)],
+      ['joiningCriteria', beet.coption(joiningCriteriaBeet)],
     ],
-    'CreateGuildArgs'
+    'UpdateGuildNameArgs'
   )
