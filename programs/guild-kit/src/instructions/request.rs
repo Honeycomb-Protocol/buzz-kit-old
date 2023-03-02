@@ -38,14 +38,7 @@ pub struct CreateRequest<'info> {
     pub project: Box<Account<'info, Project>>,
 
     /// Address container that stores the mint addresss of the collections
-    #[account(
-        seeds = [
-            b"address_container".as_ref(),
-            format!("{:?}", AddressContainerRole::ProjectMints).as_bytes(),
-            project.key().as_ref(), &[args.new_member_refrence.address_container_index
-        ]],
-        bump = member_address_container.bump
-    )]
+    #[account(constraint = member_address_container.role == AddressContainerRole::ProjectMints && member_address_container.associated_with == project.key())]
     pub member_address_container: Account<'info, AddressContainer>,
 
     /// Verify the owner of the mint
@@ -60,6 +53,14 @@ pub struct CreateRequest<'info> {
     /// the payer of the transaction
     #[account(mut)]
     pub payer: Signer<'info>,
+
+    /// the payer of the transaction
+    #[account(mut)]
+    pub authority: Signer<'info>,
+
+    /// CHECK: This is not dangerous because we don't read or write from this account
+    #[account(mut)]
+    pub vault: AccountInfo<'info>,
 
     /// RENT SYSVAR
     pub rent: Sysvar<'info, Rent>,
@@ -81,7 +82,6 @@ pub fn create_request(ctx: Context<CreateRequest>, args: CreateRequestArgs) -> R
     let guild = &mut ctx.accounts.guild;
     let member = &ctx.accounts.member;
     let member_account = &ctx.accounts.member_account;
-    let chief_address_container = &ctx.accounts.chief_address_container;
     let member_address_container = &ctx.accounts.member_address_container;
 
     // Check if member reference is in the address container
@@ -94,7 +94,7 @@ pub fn create_request(ctx: Context<CreateRequest>, args: CreateRequestArgs) -> R
     // CREATING INVITATION
     request.guild = guild.key();
     request.bump = ctx.bumps["request"];
-    request.invited = member.key();
+    request.requested_by = member.key();
 
     Ok(())
 }
@@ -119,14 +119,7 @@ pub struct AcceptRequest<'info> {
     pub request: Box<Account<'info, Request>>,
 
     /// Address container that stores the mint addresss of the collections
-    #[account(
-        seeds = [
-            b"address_container".as_ref(),
-            format!("{:?}", AddressContainerRole::ProjectMints).as_bytes(),
-            project.key().as_ref(), &[args.new_member_refrence.address_container_index
-        ]],
-        bump = member_address_container.bump
-    )]
+    #[account(constraint = member_address_container.role == AddressContainerRole::ProjectMints && member_address_container.associated_with == project.key())]
     pub member_address_container: Account<'info, AddressContainer>,
 
     /// Verify the owner of the mint
@@ -160,6 +153,10 @@ pub struct AcceptRequest<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
+    /// The wallet that pays for the rent
+    #[account(mut)]
+    pub authority: Signer<'info>,
+
     /// CHECK: This is not dangerous because we don't read or write from this account
     #[account(mut)]
     pub vault: AccountInfo<'info>,
@@ -176,9 +173,8 @@ pub struct AcceptRequestArgs {
 }
 
 /// Add a member to a guild
-pub fn add_member(ctx: Context<AcceptRequest>, args: AcceptRequestArgs) -> Result<()> {
+pub fn accept_request(ctx: Context<AcceptRequest>, args: AcceptRequestArgs) -> Result<()> {
     let guild = &mut ctx.accounts.guild;
-    let request = &mut ctx.accounts.request;
     let member_account = &ctx.accounts.member_account;
     let member_address_container = &ctx.accounts.member_address_container;
 

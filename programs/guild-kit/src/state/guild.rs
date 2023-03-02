@@ -25,7 +25,7 @@ pub struct Guild {
     pub joining_criteria: JoiningCriteria,
 }
 impl Guild {
-    pub const LEN: usize = 32 + 32 + 32 + 24 + 8;
+    pub const LEN: usize = 120 + 8;
 
     pub fn set_defaults(&mut self) {
         self.guild_id = Pubkey::default();

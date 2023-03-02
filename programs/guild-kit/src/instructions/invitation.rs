@@ -38,19 +38,12 @@ pub struct CreateInvitation<'info> {
     pub project: Box<Account<'info, Project>>,
 
     /// Address container that stores the mint addresss of the collections
-    #[account(
-        seeds = [
-            b"address_container".as_ref(),
-            format!("{:?}", AddressContainerRole::ProjectMints).as_bytes(),
-            project.key().as_ref(), &[args.chief_refrence.address_container_index
-        ]],
-        bump = chief_address_container.bump
-    )]
+    #[account(constraint = chief_address_container.role == AddressContainerRole::ProjectMints && chief_address_container.associated_with == project.key())]
     pub chief_address_container: Account<'info, AddressContainer>,
 
     /// the token account of the chief
-    #[account(constraint = cheif_account.owner == payer.key() && cheif_account.amount >= 0 as u64)]
-    pub cheif_account: Account<'info, TokenAccount>,
+    #[account(constraint = chief_account.owner == authority.key() && chief_account.amount >= 0 as u64)]
+    pub chief_account: Account<'info, TokenAccount>,
 
     /// the chief account that invited
     /// CHECK: This is not dangerous because we don't read or write from this account
@@ -58,23 +51,24 @@ pub struct CreateInvitation<'info> {
     pub chief: AccountInfo<'info>,
 
     /// Address container that stores the mint addresss of the collections
-    #[account(
-        seeds = [
-            b"address_container".as_ref(),
-            format!("{:?}", AddressContainerRole::ProjectMints).as_bytes(),
-            project.key().as_ref(), &[args.new_member_refrence.address_container_index
-        ]],
-        bump = member_address_container.bump
-    )]
+    #[account(constraint = member_address_container.role == AddressContainerRole::ProjectMints && member_address_container.associated_with == project.key())]
     pub member_address_container: Account<'info, AddressContainer>,
 
     /// Verify the owner of the mint
-    #[account(mut, constraint= member_account.amount > 0 as u64)]
+    #[account(mut, constraint = member_account.amount > 0 as u64)]
     pub member_account: Account<'info, TokenAccount>,
 
     /// the payer of the transaction
     #[account(mut)]
     pub payer: Signer<'info>,
+
+    /// the payer of the transaction
+    #[account(mut)]
+    pub authority: Signer<'info>,
+
+    /// CHECK: This is not dangerous because we don't read or write from this account
+    #[account(mut)]
+    pub vault: AccountInfo<'info>,
 
     /// RENT SYSVAR
     pub rent: Sysvar<'info, Rent>,
@@ -98,7 +92,7 @@ pub fn create_invitation(ctx: Context<CreateInvitation>, args: CreateInvitationA
     let chief = &mut ctx.accounts.chief;
 
     // CHIEF & MEMBER ACCOUNTS & ADDRESS CONTAINERS
-    let chief_account = &ctx.accounts.cheif_account;
+    let chief_account = &ctx.accounts.chief_account;
     let member_account = &ctx.accounts.member_account;
     let chief_address_container = &ctx.accounts.chief_address_container;
     let member_address_container = &ctx.accounts.member_address_container;
@@ -157,14 +151,7 @@ pub struct AcceptInvitation<'info> {
     pub chief: AccountInfo<'info>,
 
     /// Address container that stores the mint addresss of the collections
-    #[account(
-        seeds = [
-            b"address_container".as_ref(),
-            format!("{:?}", AddressContainerRole::ProjectMints).as_bytes(),
-            project.key().as_ref(), &[args.new_member_refrence.address_container_index
-        ]],
-        bump = member_address_container.bump
-    )]
+    #[account(constraint = member_address_container.role == AddressContainerRole::ProjectMints && member_address_container.associated_with == project.key())]
     pub member_address_container: Account<'info, AddressContainer>,
 
     /// Verify the owner of the mint
@@ -192,6 +179,10 @@ pub struct AcceptInvitation<'info> {
     /// The wallet that pays for the rent
     #[account(mut)]
     pub payer: Signer<'info>,
+
+    /// The wallet that pays for the rent
+    #[account(mut)]
+    pub authority: Signer<'info>,
 
     /// CHECK: This is not dangerous because we don't read or write from this account
     #[account(mut)]

@@ -5,11 +5,11 @@ use {
     anchor_spl::token::{self, Token, TokenAccount},
     hpl_hive_control::state::{AddressContainer, AddressContainerRole, Project},
 };
-// ACCEPT INVITATION INSTRUCTION
+
 #[derive(Accounts)]
-#[instruction(args: AcceptMemberArgs)]
-pub struct AcceptMember<'info> {
-    /// Guild state account
+#[instruction(args: RemoveArgs)]
+pub struct Remove<'info> {
+    /// guild state account
     #[account(mut)]
     pub guild: Box<Account<'info, Guild>>,
 
@@ -21,59 +21,52 @@ pub struct AcceptMember<'info> {
     pub project: Box<Account<'info, Project>>,
 
     /// Address container that stores the mint addresss of the collections
-    #[account(
-        seeds = [
-            b"address_container".as_ref(),
-            format!("{:?}", AddressContainerRole::ProjectMints).as_bytes(),
-            project.key().as_ref(), &[args.new_member_refrence.address_container_index
-        ]],
-        bump = member_address_container.bump
-    )]
+    #[account(constraint = member_address_container.role == AddressContainerRole::ProjectMints && member_address_container.associated_with == project.key())]
     pub member_address_container: Account<'info, AddressContainer>,
 
     /// Verify the owner of the mint
     #[account(mut, constraint= member_account.amount > 0 as u64)]
     pub member_account: Account<'info, TokenAccount>,
 
+    /// the chief account that invited
+    /// CHECK: This is not dangerous because we don't read or write from this account
+    #[account(mut)]
+    pub member: AccountInfo<'info>,
+
     /// PDA FOR verifying membership & locking mebership
     #[account(
-        init,
-          seeds = [
-              b"membership_lock".as_ref(),
-              project.key().as_ref(),
-              member_account.mint.as_ref()
-          ],
-          bump,
-          payer = payer,
-          space = MembershipLock::LEN
+        mut,
+        close = member,
     )]
     pub membership_lock: Account<'info, MembershipLock>,
 
-    /// SPL TOKEN PROGRAM
-    #[account(address = token::ID)]
-    pub token_program: Program<'info, Token>,
-
-    /// The wallet that pays for the rent
+    /// the payer of the transaction
     #[account(mut)]
     pub payer: Signer<'info>,
 
-    /// CHECK: This is not dangerous because we don't read or write from this account
+    /// authority
     #[account(mut)]
-    pub vault: AccountInfo<'info>,
+    pub authority: Signer<'info>,
 
-    /// SYSTEM PROGRAM
+    /// RENT SYSVAR
+    pub rent: Sysvar<'info, Rent>,
+
+    /// TOKEN PROGRAM
+    #[account(address = token::ID)]
+    pub token_program: Program<'info, Token>,
+
+    /// system program  
     pub system_program: Program<'info, System>,
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
-pub struct AcceptMemberArgs {
+#[derive(AnchorDeserialize, AnchorSerialize, Clone, Debug, PartialEq)]
+pub struct RemoveArgs {
     pub new_member_refrence: IndexedReference,
-    pub role: MemberRole,
 }
-
-/// Add a member to a guild
-pub fn accept_member(ctx: Context<AcceptMember>, args: AcceptMemberArgs) -> Result<()> {
+pub fn remove_member(ctx: Context<Remove>, args: RemoveArgs) -> Result<()> {
     let guild = &mut ctx.accounts.guild;
+
+    // CHIEF & MEMBER ACCOUNTS & ADDRESS CONTAINERS
     let member_account = &ctx.accounts.member_account;
     let member_address_container = &ctx.accounts.member_address_container;
 
@@ -84,11 +77,15 @@ pub fn accept_member(ctx: Context<AcceptMember>, args: AcceptMemberArgs) -> Resu
         return Err(ErrorCode::MemberNotFound.into());
     }
 
-    // adding member to the guild
-    guild.members.push(Member {
-        reference: args.new_member_refrence,
-        role: args.role,
-    });
+    // GET MEMBER INDEX IN GUILD
+    let member_index = guild
+        .members
+        .iter()
+        .position(|member| member.reference == args.new_member_refrence)
+        .ok_or(ErrorCode::MemberNotFound)?;
+
+    // Remove member from guild
+    guild.members.remove(member_index);
 
     Ok(())
 }

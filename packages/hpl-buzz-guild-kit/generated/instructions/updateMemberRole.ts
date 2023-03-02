@@ -8,103 +8,88 @@
 import * as splToken from '@solana/spl-token'
 import * as beet from '@metaplex-foundation/beet'
 import * as web3 from '@solana/web3.js'
-import { CreateGuildArgs, createGuildArgsBeet } from '../types/CreateGuildArgs'
+import {
+  UpdateMemberRoleArgs,
+  updateMemberRoleArgsBeet,
+} from '../types/UpdateMemberRoleArgs'
 
 /**
  * @category Instructions
- * @category CreateGuild
+ * @category UpdateMemberRole
  * @category generated
  */
-export type CreateGuildInstructionArgs = {
-  args: CreateGuildArgs
+export type UpdateMemberRoleInstructionArgs = {
+  args: UpdateMemberRoleArgs
 }
 /**
  * @category Instructions
- * @category CreateGuild
+ * @category UpdateMemberRole
  * @category generated
  */
-export const createGuildStruct = new beet.FixableBeetArgsStruct<
-  CreateGuildInstructionArgs & {
+export const updateMemberRoleStruct = new beet.BeetArgsStruct<
+  UpdateMemberRoleInstructionArgs & {
     instructionDiscriminator: number[] /* size: 8 */
   }
 >(
   [
     ['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['args', createGuildArgsBeet],
+    ['args', updateMemberRoleArgsBeet],
   ],
-  'CreateGuildInstructionArgs'
+  'UpdateMemberRoleInstructionArgs'
 )
 /**
- * Accounts required by the _createGuild_ instruction
+ * Accounts required by the _updateMemberRole_ instruction
  *
- * @property [] guildId
  * @property [_writable_] guild
- * @property [_writable_] guildKit
  * @property [_writable_] project
  * @property [] addressContainer
  * @property [] chiefAccount
- * @property [_writable_] membershipLock
  * @property [_writable_, **signer**] payer
  * @property [_writable_, **signer**] authority
  * @property [_writable_] vault
- * @property [] rentSysvar
  * @category Instructions
- * @category CreateGuild
+ * @category UpdateMemberRole
  * @category generated
  */
-export type CreateGuildInstructionAccounts = {
-  guildId: web3.PublicKey
+export type UpdateMemberRoleInstructionAccounts = {
   guild: web3.PublicKey
-  guildKit: web3.PublicKey
   project: web3.PublicKey
   addressContainer: web3.PublicKey
   chiefAccount: web3.PublicKey
-  membershipLock: web3.PublicKey
+  tokenProgram?: web3.PublicKey
   payer: web3.PublicKey
   authority: web3.PublicKey
   vault: web3.PublicKey
   systemProgram?: web3.PublicKey
-  rentSysvar: web3.PublicKey
-  tokenProgram?: web3.PublicKey
   anchorRemainingAccounts?: web3.AccountMeta[]
 }
 
-export const createGuildInstructionDiscriminator = [
-  163, 27, 97, 167, 132, 198, 53, 168,
+export const updateMemberRoleInstructionDiscriminator = [
+  252, 36, 202, 222, 22, 168, 39, 69,
 ]
 
 /**
- * Creates a _CreateGuild_ instruction.
+ * Creates a _UpdateMemberRole_ instruction.
  *
  * @param accounts that will be accessed while the instruction is processed
  * @param args to provide as instruction data to the program
  *
  * @category Instructions
- * @category CreateGuild
+ * @category UpdateMemberRole
  * @category generated
  */
-export function createCreateGuildInstruction(
-  accounts: CreateGuildInstructionAccounts,
-  args: CreateGuildInstructionArgs,
+export function createUpdateMemberRoleInstruction(
+  accounts: UpdateMemberRoleInstructionAccounts,
+  args: UpdateMemberRoleInstructionArgs,
   programId = new web3.PublicKey('38foo9CSfPiPZTBvNhouNaYpvkzKEzWW396PUW2GKPVA')
 ) {
-  const [data] = createGuildStruct.serialize({
-    instructionDiscriminator: createGuildInstructionDiscriminator,
+  const [data] = updateMemberRoleStruct.serialize({
+    instructionDiscriminator: updateMemberRoleInstructionDiscriminator,
     ...args,
   })
   const keys: web3.AccountMeta[] = [
     {
-      pubkey: accounts.guildId,
-      isWritable: false,
-      isSigner: false,
-    },
-    {
       pubkey: accounts.guild,
-      isWritable: true,
-      isSigner: false,
-    },
-    {
-      pubkey: accounts.guildKit,
       isWritable: true,
       isSigner: false,
     },
@@ -124,8 +109,8 @@ export function createCreateGuildInstruction(
       isSigner: false,
     },
     {
-      pubkey: accounts.membershipLock,
-      isWritable: true,
+      pubkey: accounts.tokenProgram ?? splToken.TOKEN_PROGRAM_ID,
+      isWritable: false,
       isSigner: false,
     },
     {
@@ -145,16 +130,6 @@ export function createCreateGuildInstruction(
     },
     {
       pubkey: accounts.systemProgram ?? web3.SystemProgram.programId,
-      isWritable: false,
-      isSigner: false,
-    },
-    {
-      pubkey: accounts.rentSysvar,
-      isWritable: false,
-      isSigner: false,
-    },
-    {
-      pubkey: accounts.tokenProgram ?? splToken.TOKEN_PROGRAM_ID,
       isWritable: false,
       isSigner: false,
     },

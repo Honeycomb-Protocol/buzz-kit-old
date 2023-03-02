@@ -6,6 +6,14 @@
       "name": "createGuildKit",
       "accounts": [
         {
+          "name": "kitId",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Unique identifier for the guild"
+          ]
+        },
+        {
           "name": "guildKit",
           "isMut": true,
           "isSigner": false,
@@ -124,7 +132,7 @@
           ]
         },
         {
-          "name": "cheifAccount",
+          "name": "chiefAccount",
           "isMut": false,
           "isSigner": false
         },
@@ -143,6 +151,11 @@
           "docs": [
             "The wallet that pays for the rent"
           ]
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
         },
         {
           "name": "vault",
@@ -179,6 +192,811 @@
           "name": "args",
           "type": {
             "defined": "CreateGuildArgs"
+          }
+        }
+      ]
+    },
+    {
+      "name": "updateGuildInfo",
+      "accounts": [
+        {
+          "name": "guild",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Guild state account"
+          ]
+        },
+        {
+          "name": "project",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "HIVE CONTROL"
+          ]
+        },
+        {
+          "name": "addressContainer",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Address container that stores the mint addresss of the collections"
+          ]
+        },
+        {
+          "name": "chiefAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "SPL TOKEN PROGRAM"
+          ]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "The wallet that pays for the rent"
+          ]
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "The wallet that pays for the rent"
+          ]
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "SYSTEM PROGRAM"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": "UpdateGuildNameArgs"
+          }
+        }
+      ]
+    },
+    {
+      "name": "updateMemberRole",
+      "accounts": [
+        {
+          "name": "guild",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Guild state account"
+          ]
+        },
+        {
+          "name": "project",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "HIVE CONTROL"
+          ]
+        },
+        {
+          "name": "addressContainer",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Address container that stores the mint addresss of the collections"
+          ]
+        },
+        {
+          "name": "chiefAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "SPL TOKEN PROGRAM"
+          ]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "The wallet that pays for the rent"
+          ]
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "The wallet that pays for the rent"
+          ]
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "SYSTEM PROGRAM"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": "UpdateMemberRoleArgs"
+          }
+        }
+      ]
+    },
+    {
+      "name": "createInvitation",
+      "accounts": [
+        {
+          "name": "invitationId",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Unique identifier for the guild"
+          ]
+        },
+        {
+          "name": "guild",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "guild state account"
+          ]
+        },
+        {
+          "name": "invitation",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Invitation state account"
+          ]
+        },
+        {
+          "name": "project",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "PROJECT"
+          ]
+        },
+        {
+          "name": "chiefAddressContainer",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Address container that stores the mint addresss of the collections"
+          ]
+        },
+        {
+          "name": "chiefAccount",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "the token account of the chief"
+          ]
+        },
+        {
+          "name": "chief",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "the chief account that invited"
+          ]
+        },
+        {
+          "name": "memberAddressContainer",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Address container that stores the mint addresss of the collections"
+          ]
+        },
+        {
+          "name": "memberAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Verify the owner of the mint"
+          ]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "the payer of the transaction"
+          ]
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "the payer of the transaction"
+          ]
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "RENT SYSVAR"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "TOKEN PROGRAM"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "system program"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": "CreateInvitationArgs"
+          }
+        }
+      ]
+    },
+    {
+      "name": "acceptInvitation",
+      "accounts": [
+        {
+          "name": "guild",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Guild state account"
+          ]
+        },
+        {
+          "name": "project",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "PROJECT"
+          ]
+        },
+        {
+          "name": "invitation",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Address container that stores the mint addresss of the collections"
+          ]
+        },
+        {
+          "name": "chief",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "the chief account that invited"
+          ]
+        },
+        {
+          "name": "memberAddressContainer",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Address container that stores the mint addresss of the collections"
+          ]
+        },
+        {
+          "name": "memberAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Verify the owner of the mint"
+          ]
+        },
+        {
+          "name": "membershipLock",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "PDA FOR verifying membership & locking mebership"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "SPL TOKEN PROGRAM"
+          ]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "The wallet that pays for the rent"
+          ]
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "The wallet that pays for the rent"
+          ]
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "SYSTEM PROGRAM"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": "AcceptInvitationArgs"
+          }
+        }
+      ]
+    },
+    {
+      "name": "createRequest",
+      "accounts": [
+        {
+          "name": "requestId",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Unique identifier for the guild"
+          ]
+        },
+        {
+          "name": "guild",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "guild state account"
+          ]
+        },
+        {
+          "name": "request",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Request state account"
+          ]
+        },
+        {
+          "name": "project",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "PROJECT"
+          ]
+        },
+        {
+          "name": "memberAddressContainer",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Address container that stores the mint addresss of the collections"
+          ]
+        },
+        {
+          "name": "memberAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Verify the owner of the mint"
+          ]
+        },
+        {
+          "name": "member",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "the chief of the guild"
+          ]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "the payer of the transaction"
+          ]
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "the payer of the transaction"
+          ]
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "RENT SYSVAR"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "TOKEN PROGRAM"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "system program"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": "CreateRequestArgs"
+          }
+        }
+      ]
+    },
+    {
+      "name": "acceptRequest",
+      "accounts": [
+        {
+          "name": "guild",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Guild state account"
+          ]
+        },
+        {
+          "name": "project",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "PROJECT"
+          ]
+        },
+        {
+          "name": "request",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Address container that stores the mint addresss of the collections"
+          ]
+        },
+        {
+          "name": "memberAddressContainer",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Address container that stores the mint addresss of the collections"
+          ]
+        },
+        {
+          "name": "memberAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Verify the owner of the mint"
+          ]
+        },
+        {
+          "name": "member",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "the member that requested"
+          ]
+        },
+        {
+          "name": "membershipLock",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "PDA FOR verifying membership & locking mebership"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "SPL TOKEN PROGRAM"
+          ]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "The wallet that pays for the rent"
+          ]
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "The wallet that pays for the rent"
+          ]
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "SYSTEM PROGRAM"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": "AcceptRequestArgs"
+          }
+        }
+      ]
+    },
+    {
+      "name": "joinGuild",
+      "accounts": [
+        {
+          "name": "guild",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Guild state account"
+          ]
+        },
+        {
+          "name": "project",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "PROJECT"
+          ]
+        },
+        {
+          "name": "memberAddressContainer",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Address container that stores the mint addresss of the collections"
+          ]
+        },
+        {
+          "name": "memberAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Verify the owner of the mint"
+          ]
+        },
+        {
+          "name": "membershipLock",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "PDA FOR verifying membership & locking mebership"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "SPL TOKEN PROGRAM"
+          ]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "The wallet that pays for the rent"
+          ]
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "The wallet that pays for the rent"
+          ]
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "SYSTEM PROGRAM"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": "JoinGuildArgs"
+          }
+        }
+      ]
+    },
+    {
+      "name": "removeMember",
+      "accounts": [
+        {
+          "name": "guild",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "guild state account"
+          ]
+        },
+        {
+          "name": "project",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "PROJECT"
+          ]
+        },
+        {
+          "name": "memberAddressContainer",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Address container that stores the mint addresss of the collections"
+          ]
+        },
+        {
+          "name": "memberAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Verify the owner of the mint"
+          ]
+        },
+        {
+          "name": "member",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "the chief account that invited"
+          ]
+        },
+        {
+          "name": "membershipLock",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "PDA FOR verifying membership & locking mebership"
+          ]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "the payer of the transaction"
+          ]
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "authority"
+          ]
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "RENT SYSVAR"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "TOKEN PROGRAM"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "system program"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": "RemoveArgs"
           }
         }
       ]
@@ -305,10 +1123,53 @@
       }
     },
     {
+      "name": "Request",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "requestId",
+            "docs": [
+              "the key to identify for the request"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "bump of seeds"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "guild",
+            "docs": [
+              "the key to identify which guild does it belong to"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "requestedBy",
+            "docs": [
+              "the key to identify which member does it belong to"
+            ],
+            "type": "publicKey"
+          }
+        ]
+      }
+    },
+    {
       "name": "GuildKit",
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "kitKey",
+            "docs": [
+              "the key to identify which project does it belong to"
+            ],
+            "type": "publicKey"
+          },
           {
             "name": "project",
             "docs": [
@@ -467,6 +1328,80 @@
       }
     },
     {
+      "name": "JoinGuildArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "newMemberRefrence",
+            "type": {
+              "defined": "IndexedReference"
+            }
+          },
+          {
+            "name": "role",
+            "type": {
+              "defined": "MemberRole"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RemoveArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "newMemberRefrence",
+            "type": {
+              "defined": "IndexedReference"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CreateRequestArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "newMemberRefrence",
+            "type": {
+              "defined": "IndexedReference"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "AcceptRequestArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "chiefRefrence",
+            "type": {
+              "defined": "IndexedReference"
+            }
+          },
+          {
+            "name": "newMemberRefrence",
+            "type": {
+              "defined": "IndexedReference"
+            }
+          },
+          {
+            "name": "role",
+            "type": {
+              "defined": "MemberRole"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "Member",
       "type": {
         "kind": "struct",
@@ -571,7 +1506,7 @@
     }
   ],
   "metadata": {
-    "address": "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS",
+    "address": "38foo9CSfPiPZTBvNhouNaYpvkzKEzWW396PUW2GKPVA",
     "origin": "anchor",
     "binaryVersion": "0.26.0",
     "libVersion": "0.26.0"

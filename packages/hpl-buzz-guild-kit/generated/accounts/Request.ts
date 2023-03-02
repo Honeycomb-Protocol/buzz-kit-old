@@ -5,51 +5,59 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
 import * as web3 from '@solana/web3.js'
 import * as beetSolana from '@metaplex-foundation/beet-solana'
+import * as beet from '@metaplex-foundation/beet'
 
 /**
- * Arguments used to create {@link MembershipLock}
+ * Arguments used to create {@link Request}
  * @category Accounts
  * @category generated
  */
-export type MembershipLockArgs = {
-  locked: boolean
+export type RequestArgs = {
+  requestId: web3.PublicKey
+  bump: number
+  guild: web3.PublicKey
+  requestedBy: web3.PublicKey
 }
 
-export const membershipLockDiscriminator = [30, 222, 85, 175, 67, 133, 40, 43]
+export const requestDiscriminator = [125, 172, 150, 161, 162, 115, 39, 71]
 /**
- * Holds the data for the {@link MembershipLock} Account and provides de/serialization
+ * Holds the data for the {@link Request} Account and provides de/serialization
  * functionality for that data
  *
  * @category Accounts
  * @category generated
  */
-export class MembershipLock implements MembershipLockArgs {
-  private constructor(readonly locked: boolean) {}
+export class Request implements RequestArgs {
+  private constructor(
+    readonly requestId: web3.PublicKey,
+    readonly bump: number,
+    readonly guild: web3.PublicKey,
+    readonly requestedBy: web3.PublicKey
+  ) {}
 
   /**
-   * Creates a {@link MembershipLock} instance from the provided args.
+   * Creates a {@link Request} instance from the provided args.
    */
-  static fromArgs(args: MembershipLockArgs) {
-    return new MembershipLock(args.locked)
+  static fromArgs(args: RequestArgs) {
+    return new Request(args.requestId, args.bump, args.guild, args.requestedBy)
   }
 
   /**
-   * Deserializes the {@link MembershipLock} from the data of the provided {@link web3.AccountInfo}.
+   * Deserializes the {@link Request} from the data of the provided {@link web3.AccountInfo}.
    * @returns a tuple of the account data and the offset up to which the buffer was read to obtain it.
    */
   static fromAccountInfo(
     accountInfo: web3.AccountInfo<Buffer>,
     offset = 0
-  ): [MembershipLock, number] {
-    return MembershipLock.deserialize(accountInfo.data, offset)
+  ): [Request, number] {
+    return Request.deserialize(accountInfo.data, offset)
   }
 
   /**
    * Retrieves the account info from the provided address and deserializes
-   * the {@link MembershipLock} from its data.
+   * the {@link Request} from its data.
    *
    * @throws Error if no account info is found at the address or if deserialization fails
    */
@@ -57,15 +65,15 @@ export class MembershipLock implements MembershipLockArgs {
     connection: web3.Connection,
     address: web3.PublicKey,
     commitmentOrConfig?: web3.Commitment | web3.GetAccountInfoConfig
-  ): Promise<MembershipLock> {
+  ): Promise<Request> {
     const accountInfo = await connection.getAccountInfo(
       address,
       commitmentOrConfig
     )
     if (accountInfo == null) {
-      throw new Error(`Unable to find MembershipLock account at ${address}`)
+      throw new Error(`Unable to find Request account at ${address}`)
     }
-    return MembershipLock.fromAccountInfo(accountInfo, 0)[0]
+    return Request.fromAccountInfo(accountInfo, 0)[0]
   }
 
   /**
@@ -79,39 +87,39 @@ export class MembershipLock implements MembershipLockArgs {
       '38foo9CSfPiPZTBvNhouNaYpvkzKEzWW396PUW2GKPVA'
     )
   ) {
-    return beetSolana.GpaBuilder.fromStruct(programId, membershipLockBeet)
+    return beetSolana.GpaBuilder.fromStruct(programId, requestBeet)
   }
 
   /**
-   * Deserializes the {@link MembershipLock} from the provided data Buffer.
+   * Deserializes the {@link Request} from the provided data Buffer.
    * @returns a tuple of the account data and the offset up to which the buffer was read to obtain it.
    */
-  static deserialize(buf: Buffer, offset = 0): [MembershipLock, number] {
-    return membershipLockBeet.deserialize(buf, offset)
+  static deserialize(buf: Buffer, offset = 0): [Request, number] {
+    return requestBeet.deserialize(buf, offset)
   }
 
   /**
-   * Serializes the {@link MembershipLock} into a Buffer.
+   * Serializes the {@link Request} into a Buffer.
    * @returns a tuple of the created Buffer and the offset up to which the buffer was written to store it.
    */
   serialize(): [Buffer, number] {
-    return membershipLockBeet.serialize({
-      accountDiscriminator: membershipLockDiscriminator,
+    return requestBeet.serialize({
+      accountDiscriminator: requestDiscriminator,
       ...this,
     })
   }
 
   /**
    * Returns the byteSize of a {@link Buffer} holding the serialized data of
-   * {@link MembershipLock}
+   * {@link Request}
    */
   static get byteSize() {
-    return membershipLockBeet.byteSize
+    return requestBeet.byteSize
   }
 
   /**
    * Fetches the minimum balance needed to exempt an account holding
-   * {@link MembershipLock} data from rent
+   * {@link Request} data from rent
    *
    * @param connection used to retrieve the rent exemption information
    */
@@ -120,26 +128,29 @@ export class MembershipLock implements MembershipLockArgs {
     commitment?: web3.Commitment
   ): Promise<number> {
     return connection.getMinimumBalanceForRentExemption(
-      MembershipLock.byteSize,
+      Request.byteSize,
       commitment
     )
   }
 
   /**
    * Determines if the provided {@link Buffer} has the correct byte size to
-   * hold {@link MembershipLock} data.
+   * hold {@link Request} data.
    */
   static hasCorrectByteSize(buf: Buffer, offset = 0) {
-    return buf.byteLength - offset === MembershipLock.byteSize
+    return buf.byteLength - offset === Request.byteSize
   }
 
   /**
-   * Returns a readable version of {@link MembershipLock} properties
+   * Returns a readable version of {@link Request} properties
    * and can be used to convert to JSON and/or logging
    */
   pretty() {
     return {
-      locked: this.locked,
+      requestId: this.requestId.toBase58(),
+      bump: this.bump,
+      guild: this.guild.toBase58(),
+      requestedBy: this.requestedBy.toBase58(),
     }
   }
 }
@@ -148,16 +159,19 @@ export class MembershipLock implements MembershipLockArgs {
  * @category Accounts
  * @category generated
  */
-export const membershipLockBeet = new beet.BeetStruct<
-  MembershipLock,
-  MembershipLockArgs & {
+export const requestBeet = new beet.BeetStruct<
+  Request,
+  RequestArgs & {
     accountDiscriminator: number[] /* size: 8 */
   }
 >(
   [
     ['accountDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['locked', beet.bool],
+    ['requestId', beetSolana.publicKey],
+    ['bump', beet.u8],
+    ['guild', beetSolana.publicKey],
+    ['requestedBy', beetSolana.publicKey],
   ],
-  MembershipLock.fromArgs,
-  'MembershipLock'
+  Request.fromArgs,
+  'Request'
 )

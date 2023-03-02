@@ -42,17 +42,11 @@ pub struct CreateGuild<'info> {
     pub project: Box<Account<'info, Project>>,
 
     /// Address container that stores the mint addresss of the collections
-    #[account(
-        seeds = [
-            b"address_container".as_ref(),
-     format!("{:?}", AddressContainerRole::ProjectMints).as_bytes(),
-     project.key().as_ref(), &[args.chief_refrence.address_container_index]],
-      bump = address_container.bump
-    )]
+    #[account(constraint = address_container.role == AddressContainerRole::ProjectMints && address_container.associated_with == project.key())]
     pub address_container: Account<'info, AddressContainer>,
 
-    #[account(constraint = cheif_account.owner == payer.key() && cheif_account.amount >= 0 as u64)]
-    pub cheif_account: Account<'info, TokenAccount>,
+    #[account(constraint = chief_account.owner == authority.key() && chief_account.amount >= 0 as u64)]
+    pub chief_account: Account<'info, TokenAccount>,
 
     /// PDA FOR verifying membbership & locking mebership
     #[account(
@@ -60,7 +54,7 @@ pub struct CreateGuild<'info> {
           seeds = [
               b"membership_lock".as_ref(),
               project.key().as_ref(),
-              cheif_account.mint.as_ref()
+              chief_account.mint.as_ref()
           ],
           bump,
           payer = payer,
@@ -71,6 +65,11 @@ pub struct CreateGuild<'info> {
     /// The wallet that pays for the rent
     #[account(mut)]
     pub payer: Signer<'info>,
+
+    // authority of the guild
+    /// CHECK: This is not dangerous because we don't read or write from this account
+    #[account(mut)]
+    pub authority: Signer<'info>,
 
     /// CHECK: This is not dangerous because we don't read or write from this account
     #[account(mut)]
@@ -98,12 +97,12 @@ pub struct CreateGuildArgs {
 /// Create a new guild
 pub fn create_guild(ctx: Context<CreateGuild>, args: CreateGuildArgs) -> Result<()> {
     let membership_lock = &mut ctx.accounts.membership_lock;
-    let cheif_account = &mut ctx.accounts.cheif_account;
+    let chief_account = &mut ctx.accounts.chief_account;
     let guild = &mut ctx.accounts.guild;
     let address_container = &mut ctx.accounts.address_container;
     let mint_at_ref = address_container.addresses[args.chief_refrence.index_in_container as usize];
 
-    if mint_at_ref != cheif_account.mint {
+    if mint_at_ref != chief_account.mint {
         return Err(ErrorCode::MemberRefrenceVerificationFailed.into());
     }
 
@@ -139,8 +138,12 @@ pub struct UpdateGuildInfo<'info> {
     )]
     pub project: Box<Account<'info, Project>>,
 
-    #[account(constraint = cheif_account.owner == payer.key() && cheif_account.amount >= 0 as u64)]
-    pub cheif_account: Account<'info, TokenAccount>,
+    /// Address container that stores the mint addresss of the collections
+    #[account(constraint = address_container.role == AddressContainerRole::ProjectMints && address_container.associated_with == project.key())]
+    pub address_container: Account<'info, AddressContainer>,
+
+    #[account(constraint = chief_account.owner == authority.key() && chief_account.amount >= 0 as u64)]
+    pub chief_account: Account<'info, TokenAccount>,
 
     /// SPL TOKEN PROGRAM
     #[account(address = token::ID)]
@@ -149,6 +152,10 @@ pub struct UpdateGuildInfo<'info> {
     /// The wallet that pays for the rent
     #[account(mut)]
     pub payer: Signer<'info>,
+
+    /// The wallet that pays for the rent
+    #[account(mut)]
+    pub authority: Signer<'info>,
 
     /// CHECK: This is not dangerous because we don't read or write from this account
     #[account(mut)]
@@ -167,9 +174,16 @@ pub struct UpdateGuildNameArgs {
 }
 
 /// Update a guild name or description
-pub fn update_guild_name(ctx: Context<UpdateGuildInfo>, args: UpdateGuildNameArgs) -> Result<()> {
+pub fn update_guild_info(ctx: Context<UpdateGuildInfo>, args: UpdateGuildNameArgs) -> Result<()> {
     let guild = &mut ctx.accounts.guild;
+    let chief_account = &mut ctx.accounts.chief_account;
+    let address_container = &mut ctx.accounts.address_container;
+    let mint_at_ref = address_container.addresses[args.chief_refrence.index_in_container as usize];
 
+    if mint_at_ref != chief_account.mint {
+        return Err(ErrorCode::MemberRefrenceVerificationFailed.into());
+    }
+    
     // Check if the chief reference is valid
     guild
         .members

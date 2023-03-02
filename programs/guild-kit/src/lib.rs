@@ -5,12 +5,13 @@ pub mod state;
 use anchor_lang::prelude::*;
 use instructions::*;
 
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+declare_id!("38foo9CSfPiPZTBvNhouNaYpvkzKEzWW396PUW2GKPVA");
 
 #[program]
 pub mod hpl_buzz_guild_kit {
     use super::*;
 
+    // GUILD KIT
     pub fn create_guild_kit(ctx: Context<CreateGuildKit>) -> Result<()> {
         hpl_hive_control::cpi::add_remove_service(
             CpiContext::new(
@@ -40,6 +41,7 @@ pub mod hpl_buzz_guild_kit {
         instructions::create_guild_kit(ctx)
     }
 
+    // GUILD
     pub fn create_guild(ctx: Context<CreateGuild>, args: CreateGuildArgs) -> Result<()> {
         hpl_hive_control::instructions::platform_gate(
             hpl_hive_control::constants::ACTIONS.public_low,
@@ -52,5 +54,53 @@ pub mod hpl_buzz_guild_kit {
         )?;
 
         instructions::create_guild(ctx, args)
+    }
+
+    pub fn update_guild_info(
+        ctx: Context<UpdateGuildInfo>,
+        args: UpdateGuildNameArgs,
+    ) -> Result<()> {
+        instructions::update_guild_info(ctx, args)
+    }
+
+    pub fn update_member_role(
+        ctx: Context<UpdateGuildInfo>,
+        args: UpdateMemberRoleArgs,
+    ) -> Result<()> {
+        instructions::update_member_role(ctx, args)
+    }
+
+    // INVITATIONS
+    pub fn create_invitation(
+        ctx: Context<CreateInvitation>,
+        args: CreateInvitationArgs,
+    ) -> Result<()> {
+        instructions::create_invitation(ctx, args)
+    }
+
+    pub fn accept_invitation(
+        ctx: Context<AcceptInvitation>,
+        args: AcceptInvitationArgs,
+    ) -> Result<()> {
+        instructions::accept_invitation(ctx, args)
+    }
+
+    // REQUESTS
+    pub fn create_request(ctx: Context<CreateRequest>, args: CreateRequestArgs) -> Result<()> {
+        instructions::create_request(ctx, args)
+    }
+
+    pub fn accept_request(ctx: Context<AcceptRequest>, args: AcceptRequestArgs) -> Result<()> {
+        instructions::accept_request(ctx, args)
+    }
+
+    // PUBLIC JOINING
+    pub fn join_guild(ctx: Context<JoinGuild>, args: JoinGuildArgs) -> Result<()> {
+        instructions::join_guild(ctx, args)
+    }
+
+    // REMOVE MEMBER
+    pub fn remove_member(ctx: Context<Remove>, args: RemoveArgs) -> Result<()> {
+        instructions::remove_member(ctx, args)
     }
 }

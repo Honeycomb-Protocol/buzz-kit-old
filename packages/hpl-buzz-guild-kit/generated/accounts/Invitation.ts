@@ -96,7 +96,7 @@ export class Invitation implements InvitationArgs {
    */
   static gpaBuilder(
     programId: web3.PublicKey = new web3.PublicKey(
-      'Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS'
+      '38foo9CSfPiPZTBvNhouNaYpvkzKEzWW396PUW2GKPVA'
     )
   ) {
     return beetSolana.GpaBuilder.fromStruct(programId, invitationBeet)

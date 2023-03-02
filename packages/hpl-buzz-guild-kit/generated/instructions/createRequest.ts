@@ -8,93 +8,95 @@
 import * as splToken from '@solana/spl-token'
 import * as beet from '@metaplex-foundation/beet'
 import * as web3 from '@solana/web3.js'
-import { CreateGuildArgs, createGuildArgsBeet } from '../types/CreateGuildArgs'
+import {
+  CreateRequestArgs,
+  createRequestArgsBeet,
+} from '../types/CreateRequestArgs'
 
 /**
  * @category Instructions
- * @category CreateGuild
+ * @category CreateRequest
  * @category generated
  */
-export type CreateGuildInstructionArgs = {
-  args: CreateGuildArgs
+export type CreateRequestInstructionArgs = {
+  args: CreateRequestArgs
 }
 /**
  * @category Instructions
- * @category CreateGuild
+ * @category CreateRequest
  * @category generated
  */
-export const createGuildStruct = new beet.FixableBeetArgsStruct<
-  CreateGuildInstructionArgs & {
+export const createRequestStruct = new beet.BeetArgsStruct<
+  CreateRequestInstructionArgs & {
     instructionDiscriminator: number[] /* size: 8 */
   }
 >(
   [
     ['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['args', createGuildArgsBeet],
+    ['args', createRequestArgsBeet],
   ],
-  'CreateGuildInstructionArgs'
+  'CreateRequestInstructionArgs'
 )
 /**
- * Accounts required by the _createGuild_ instruction
+ * Accounts required by the _createRequest_ instruction
  *
- * @property [] guildId
+ * @property [] requestId
  * @property [_writable_] guild
- * @property [_writable_] guildKit
+ * @property [_writable_] request
  * @property [_writable_] project
- * @property [] addressContainer
- * @property [] chiefAccount
- * @property [_writable_] membershipLock
+ * @property [] memberAddressContainer
+ * @property [_writable_] memberAccount
+ * @property [_writable_] member
  * @property [_writable_, **signer**] payer
  * @property [_writable_, **signer**] authority
  * @property [_writable_] vault
- * @property [] rentSysvar
  * @category Instructions
- * @category CreateGuild
+ * @category CreateRequest
  * @category generated
  */
-export type CreateGuildInstructionAccounts = {
-  guildId: web3.PublicKey
+export type CreateRequestInstructionAccounts = {
+  requestId: web3.PublicKey
   guild: web3.PublicKey
-  guildKit: web3.PublicKey
+  request: web3.PublicKey
   project: web3.PublicKey
-  addressContainer: web3.PublicKey
-  chiefAccount: web3.PublicKey
-  membershipLock: web3.PublicKey
+  memberAddressContainer: web3.PublicKey
+  memberAccount: web3.PublicKey
+  member: web3.PublicKey
   payer: web3.PublicKey
   authority: web3.PublicKey
   vault: web3.PublicKey
-  systemProgram?: web3.PublicKey
-  rentSysvar: web3.PublicKey
+  rent?: web3.PublicKey
   tokenProgram?: web3.PublicKey
+  systemProgram?: web3.PublicKey
   anchorRemainingAccounts?: web3.AccountMeta[]
 }
 
-export const createGuildInstructionDiscriminator = [
-  163, 27, 97, 167, 132, 198, 53, 168,
+export const createRequestInstructionDiscriminator = [
+  219, 191, 93, 237, 18, 44, 42, 84,
 ]
 
 /**
- * Creates a _CreateGuild_ instruction.
+ * Creates a _CreateRequest_ instruction.
  *
  * @param accounts that will be accessed while the instruction is processed
  * @param args to provide as instruction data to the program
  *
  * @category Instructions
- * @category CreateGuild
+ * @category CreateRequest
  * @category generated
  */
-export function createCreateGuildInstruction(
-  accounts: CreateGuildInstructionAccounts,
-  args: CreateGuildInstructionArgs,
+export function createCreateRequestInstruction(
+  accounts: CreateRequestInstructionAccounts,
+  args: CreateRequestInstructionArgs,
   programId = new web3.PublicKey('38foo9CSfPiPZTBvNhouNaYpvkzKEzWW396PUW2GKPVA')
 ) {
-  const [data] = createGuildStruct.serialize({
-    instructionDiscriminator: createGuildInstructionDiscriminator,
+  const [data] = createRequestStruct.serialize({
+    instructionDiscriminator: createRequestInstructionDiscriminator,
     ...args,
   })
   const keys: web3.AccountMeta[] = [
     {
-      pubkey: accounts.guildId,
+      pubkey: accounts.requestId,
       isWritable: false,
       isSigner: false,
     },
@@ -104,7 +106,7 @@ export function createCreateGuildInstruction(
       isSigner: false,
     },
     {
-      pubkey: accounts.guildKit,
+      pubkey: accounts.request,
       isWritable: true,
       isSigner: false,
     },
@@ -114,17 +116,17 @@ export function createCreateGuildInstruction(
       isSigner: false,
     },
     {
-      pubkey: accounts.addressContainer,
+      pubkey: accounts.memberAddressContainer,
       isWritable: false,
       isSigner: false,
     },
     {
-      pubkey: accounts.chiefAccount,
-      isWritable: false,
+      pubkey: accounts.memberAccount,
+      isWritable: true,
       isSigner: false,
     },
     {
-      pubkey: accounts.membershipLock,
+      pubkey: accounts.member,
       isWritable: true,
       isSigner: false,
     },
@@ -144,17 +146,17 @@ export function createCreateGuildInstruction(
       isSigner: false,
     },
     {
-      pubkey: accounts.systemProgram ?? web3.SystemProgram.programId,
-      isWritable: false,
-      isSigner: false,
-    },
-    {
-      pubkey: accounts.rentSysvar,
+      pubkey: accounts.rent ?? web3.SYSVAR_RENT_PUBKEY,
       isWritable: false,
       isSigner: false,
     },
     {
       pubkey: accounts.tokenProgram ?? splToken.TOKEN_PROGRAM_ID,
+      isWritable: false,
+      isSigner: false,
+    },
+    {
+      pubkey: accounts.systemProgram ?? web3.SystemProgram.programId,
       isWritable: false,
       isSigner: false,
     },

@@ -15,6 +15,7 @@ import * as beet from '@metaplex-foundation/beet'
  * @category generated
  */
 export type GuildKitArgs = {
+  kitKey: web3.PublicKey
   project: web3.PublicKey
   bump: number
 }
@@ -29,6 +30,7 @@ export const guildKitDiscriminator = [46, 171, 148, 99, 107, 19, 187, 190]
  */
 export class GuildKit implements GuildKitArgs {
   private constructor(
+    readonly kitKey: web3.PublicKey,
     readonly project: web3.PublicKey,
     readonly bump: number
   ) {}
@@ -37,7 +39,7 @@ export class GuildKit implements GuildKitArgs {
    * Creates a {@link GuildKit} instance from the provided args.
    */
   static fromArgs(args: GuildKitArgs) {
-    return new GuildKit(args.project, args.bump)
+    return new GuildKit(args.kitKey, args.project, args.bump)
   }
 
   /**
@@ -80,7 +82,7 @@ export class GuildKit implements GuildKitArgs {
    */
   static gpaBuilder(
     programId: web3.PublicKey = new web3.PublicKey(
-      'Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS'
+      '38foo9CSfPiPZTBvNhouNaYpvkzKEzWW396PUW2GKPVA'
     )
   ) {
     return beetSolana.GpaBuilder.fromStruct(programId, guildKitBeet)
@@ -143,6 +145,7 @@ export class GuildKit implements GuildKitArgs {
    */
   pretty() {
     return {
+      kitKey: this.kitKey.toBase58(),
       project: this.project.toBase58(),
       bump: this.bump,
     }
@@ -161,6 +164,7 @@ export const guildKitBeet = new beet.BeetStruct<
 >(
   [
     ['accountDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
+    ['kitKey', beetSolana.publicKey],
     ['project', beetSolana.publicKey],
     ['bump', beet.u8],
   ],

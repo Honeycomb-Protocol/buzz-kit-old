@@ -3,6 +3,8 @@ import key from '../key.json';
 import { Config } from './types';
 import { Connection, Keypair } from '@solana/web3.js';
 import { keypairIdentity, Metaplex } from '@metaplex-foundation/js';
+import { PROGRAM_ADDRESS } from './../packages/hpl-buzz-guild-kit/generated/index';
+import { Honeycomb } from '@honeycomb-protocol/hive-control';
 
 
 // CONFIGS
@@ -12,11 +14,13 @@ export const devnetConfig: Config = {
   // endpoint: "https://metaplex.devnet.rpcstaking_pool.com/",
   endpoint:
     "https://lingering-newest-sheet.solana-devnet.quiknode.pro/fb6e6465df3955a06fd5ddec2e5b003896f56adb/",
+  mints: JSON.parse(fs.readFileSync("./scripts/assets/devnet.json").toString())
 };
 
 export const mainnetConfig: Config = {
   network: "mainnet-beta",
   endpoint: "https://api.metaplex.solana.com",
+  mints: JSON.parse(fs.readFileSync("./scripts/assets/devnet.json").toString())
 };
 
 
@@ -83,7 +87,7 @@ export const getDependencies = (
     setDeployments(programName, network, deployments);
 
   let deployments: any = {
-    program: "PROGRAM_ADDRESS",
+    program: PROGRAM_ADDRESS,
   };
 
   try {
@@ -96,6 +100,7 @@ export const getDependencies = (
     config,
     connection,
     deployments,
+    signer: keypair,
     mx,
     setDeployments: setDeploymentsLocal,
   };

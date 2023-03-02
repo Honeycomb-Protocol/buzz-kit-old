@@ -11,6 +11,10 @@ use {
 /// Accounts used in create guild_kit instruction
 #[derive(Accounts)]
 pub struct CreateGuildKit<'info> {
+    /// Unique identifier for the guild
+    /// CHECK: This is not dangerous because we don't read or write from this account
+    pub kit_id: AccountInfo<'info>,
+
     /// GuildKit state account
     #[account(
       init, payer = payer,

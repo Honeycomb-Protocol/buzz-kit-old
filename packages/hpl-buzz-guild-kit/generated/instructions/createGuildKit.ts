@@ -23,6 +23,7 @@ export const createGuildKitStruct = new beet.BeetArgsStruct<{
 /**
  * Accounts required by the _createGuildKit_ instruction
  *
+ * @property [] kitId
  * @property [_writable_] guildKit
  * @property [_writable_] project
  * @property [] delegateAuthority (optional)
@@ -36,6 +37,7 @@ export const createGuildKitStruct = new beet.BeetArgsStruct<{
  * @category generated
  */
 export type CreateGuildKitInstructionAccounts = {
+  kitId: web3.PublicKey
   guildKit: web3.PublicKey
   project: web3.PublicKey
   delegateAuthority?: web3.PublicKey
@@ -68,12 +70,17 @@ export const createGuildKitInstructionDiscriminator = [
  */
 export function createCreateGuildKitInstruction(
   accounts: CreateGuildKitInstructionAccounts,
-  programId = new web3.PublicKey('Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS')
+  programId = new web3.PublicKey('38foo9CSfPiPZTBvNhouNaYpvkzKEzWW396PUW2GKPVA')
 ) {
   const [data] = createGuildKitStruct.serialize({
     instructionDiscriminator: createGuildKitInstructionDiscriminator,
   })
   const keys: web3.AccountMeta[] = [
+    {
+      pubkey: accounts.kitId,
+      isWritable: false,
+      isSigner: false,
+    },
     {
       pubkey: accounts.guildKit,
       isWritable: true,

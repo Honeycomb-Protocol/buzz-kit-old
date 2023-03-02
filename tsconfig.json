@@ -13,7 +13,7 @@
     "preserveWatchOutput": true,
     "emitDeclarationOnly": false,
     "importHelpers": false,
-    "strict": true,
+    "strict": false,
     "noUnusedLocals": true,
     "noFallthroughCasesInSwitch": true,
     "downlevelIteration": true,
@@ -25,9 +25,6 @@
     "useUnknownInCatchVariables": false,
     "rootDir": "./packages"
   },
-  "include": [
-    "./packages"
-  ],
-  "exclude": ["node_modules",
-    "dist", "build", "lib"]
+  "include": ["./packages"],
+  "exclude": ["node_modules", "dist", "build", "lib"]
 }

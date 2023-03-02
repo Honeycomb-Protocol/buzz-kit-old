@@ -30,6 +30,7 @@ impl Invitation {
     }
 }
 
+#[account]
 pub struct Request {
     /// the key to identify for the request
     pub request_id: Pubkey,
@@ -44,7 +45,7 @@ pub struct Request {
     pub requested_by: Pubkey,
 }
 impl Request {
-    pub const LEN: usize = 32 + 1 + 32 + 32 + 8;
+    pub const LEN: usize = 97 + 8;
 
     pub fn set_defaults(&mut self) {
         self.request_id = Pubkey::default();
