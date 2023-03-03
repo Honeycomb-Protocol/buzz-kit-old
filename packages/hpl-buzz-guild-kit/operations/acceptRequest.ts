@@ -20,7 +20,7 @@ export function acceptRequestCtx(args: CreateAcceptRequestCtx): OperationCtx {
     const programId = args.programId || PROGRAM_ID;
 
     // PDAS
-    const [membershipLock] = getMembershipLockPda(programId);
+    const [membershipLock] = getMembershipLockPda(programId, args.project, args.memberNftMint);
     const [memberAddressContainer] = getAddressContainerPda(AddressContainerRole.ProjectMints, args.project, args.args.newMemberRefrence.addressContainerIndex);
     const memberAccount = getAssociatedTokenAddressSync(
         args.memberNftMint,
@@ -49,7 +49,7 @@ export function acceptRequestCtx(args: CreateAcceptRequestCtx): OperationCtx {
     };
 }
 
-type CreateRequestArgs = {
+export type AcceptRequestArgs = {
     args: AcceptRequestArgsChain,
     programId?: web3.PublicKey,
     guild: web3.PublicKey,
@@ -57,7 +57,7 @@ type CreateRequestArgs = {
     member: web3.PublicKey,
     memberNftMint: web3.PublicKey,
 }
-export async function acceptRequest(honeycomb: Honeycomb, args: CreateRequestArgs) {
+export async function acceptRequest(honeycomb: Honeycomb, args: AcceptRequestArgs) {
     const ctx = acceptRequestCtx({
         ...args,
         payer: honeycomb.identity().publicKey,
@@ -66,7 +66,7 @@ export async function acceptRequest(honeycomb: Honeycomb, args: CreateRequestArg
     });
 
     return {
-        response: honeycomb.rpc().sendAndConfirmTransaction(ctx, {
+        response: await honeycomb.rpc().sendAndConfirmTransaction(ctx, {
             skipPreflight: true,
         }),
     };

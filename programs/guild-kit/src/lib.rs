@@ -45,6 +45,7 @@ pub mod hpl_buzz_guild_kit {
     pub fn create_guild(ctx: Context<CreateGuild>, args: CreateGuildArgs) -> Result<()> {
         hpl_hive_control::instructions::platform_gate(
             hpl_hive_control::constants::ACTIONS.public_low,
+            None,
             &ctx.accounts.project,
             ctx.accounts.payer.key(),
             ctx.accounts.payer.to_account_info(),

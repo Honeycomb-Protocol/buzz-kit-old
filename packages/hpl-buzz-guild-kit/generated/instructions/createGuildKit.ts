@@ -23,7 +23,7 @@ export const createGuildKitStruct = new beet.BeetArgsStruct<{
 /**
  * Accounts required by the _createGuildKit_ instruction
  *
- * @property [] kitId
+ * @property [] kitKey
  * @property [_writable_] guildKit
  * @property [_writable_] project
  * @property [] delegateAuthority (optional)
@@ -37,7 +37,7 @@ export const createGuildKitStruct = new beet.BeetArgsStruct<{
  * @category generated
  */
 export type CreateGuildKitInstructionAccounts = {
-  kitId: web3.PublicKey
+  kitKey: web3.PublicKey
   guildKit: web3.PublicKey
   project: web3.PublicKey
   delegateAuthority?: web3.PublicKey
@@ -77,7 +77,7 @@ export function createCreateGuildKitInstruction(
   })
   const keys: web3.AccountMeta[] = [
     {
-      pubkey: accounts.kitId,
+      pubkey: accounts.kitKey,
       isWritable: false,
       isSigner: false,
     },

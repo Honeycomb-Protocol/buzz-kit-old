@@ -3,7 +3,10 @@ use {
     crate::state::*,
     anchor_lang::prelude::*,
     anchor_spl::token::{self, Token, TokenAccount},
-    hpl_hive_control::state::{AddressContainer, AddressContainerRole, Project},
+    hpl_hive_control::{
+        assertions::assert_indexed_reference,
+        state::{AddressContainer, AddressContainerRole, IndexedReference, Project},
+    },
 };
 
 // ACCEPT INVITATION INSTRUCTION
@@ -76,8 +79,12 @@ pub fn join_guild(ctx: Context<JoinGuild>, args: JoinGuildArgs) -> Result<()> {
     let member_address_container = &ctx.accounts.member_address_container;
 
     // Check if member reference is in the address container
-    if member_address_container.addresses[args.new_member_refrence.address_container_index as usize]
-        != member_account.mint
+    if assert_indexed_reference(
+        args.new_member_refrence.clone(),
+        member_address_container.clone(),
+        member_account.mint,
+    )
+    .unwrap()
     {
         return Err(ErrorCode::MemberNotFound.into());
     }

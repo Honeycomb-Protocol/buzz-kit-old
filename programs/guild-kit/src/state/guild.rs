@@ -1,5 +1,6 @@
 use crate::state::enums::*;
 use anchor_lang::prelude::*;
+use hpl_hive_control::state::IndexedReference;
 
 #[account]
 pub struct Guild {
@@ -54,10 +55,4 @@ impl MembershipLock {
 pub struct Member {
     pub role: MemberRole,
     pub reference: IndexedReference,
-}
-
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Debug, Default)]
-pub struct IndexedReference {
-    pub address_container_index: u8,
-    pub index_in_container: u8,
 }

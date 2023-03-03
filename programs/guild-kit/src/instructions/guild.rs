@@ -4,7 +4,8 @@ use {
     anchor_lang::prelude::*,
     anchor_spl::token::{self, Token, TokenAccount},
     hpl_hive_control::{
-        state::{AddressContainer, AddressContainerRole, Project},
+        state::{AddressContainer, AddressContainerRole, Project, IndexedReference},
+        assertions::assert_indexed_reference,
     },
 };
 
@@ -32,7 +33,8 @@ pub struct CreateGuild<'info> {
     #[account(mut, 
         seeds = [
             b"guild_kit".as_ref(),
-            project.key().as_ref()],
+            project.key().as_ref()
+        ],
       bump = guild_kit.bump
     )]
     pub guild_kit: Box<Account<'info, GuildKit>>,
@@ -100,9 +102,8 @@ pub fn create_guild(ctx: Context<CreateGuild>, args: CreateGuildArgs) -> Result<
     let chief_account = &mut ctx.accounts.chief_account;
     let guild = &mut ctx.accounts.guild;
     let address_container = &mut ctx.accounts.address_container;
-    let mint_at_ref = address_container.addresses[args.chief_refrence.index_in_container as usize];
-
-    if mint_at_ref != chief_account.mint {
+    
+    if assert_indexed_reference(args.chief_refrence.clone(), address_container.clone(), chief_account.mint).unwrap() {
         return Err(ErrorCode::MemberRefrenceVerificationFailed.into());
     }
 
@@ -178,9 +179,8 @@ pub fn update_guild_info(ctx: Context<UpdateGuildInfo>, args: UpdateGuildNameArg
     let guild = &mut ctx.accounts.guild;
     let chief_account = &mut ctx.accounts.chief_account;
     let address_container = &mut ctx.accounts.address_container;
-    let mint_at_ref = address_container.addresses[args.chief_refrence.index_in_container as usize];
 
-    if mint_at_ref != chief_account.mint {
+    if assert_indexed_reference(args.chief_refrence.clone(), address_container.clone(), chief_account.mint).unwrap() {
         return Err(ErrorCode::MemberRefrenceVerificationFailed.into());
     }
     
@@ -195,6 +195,7 @@ pub fn update_guild_info(ctx: Context<UpdateGuildInfo>, args: UpdateGuildNameArg
     guild.name = args.name.unwrap_or(guild.name.clone());
     guild.visibility = args.visibility.unwrap_or(guild.visibility.clone());
     guild.joining_criteria = args.joining_criteria.unwrap_or(guild.joining_criteria.clone());
+
     Ok(())
 }
 

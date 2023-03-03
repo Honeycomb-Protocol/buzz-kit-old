@@ -6,7 +6,7 @@
       "name": "createGuildKit",
       "accounts": [
         {
-          "name": "kitId",
+          "name": "kitKey",
           "isMut": false,
           "isSigner": false,
           "docs": [
@@ -1422,22 +1422,6 @@
       }
     },
     {
-      "name": "IndexedReference",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "addressContainerIndex",
-            "type": "u8"
-          },
-          {
-            "name": "indexInContainer",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
       "name": "GuildVisibility",
       "type": {
         "kind": "enum",
@@ -1478,6 +1462,22 @@
           },
           {
             "name": "Requested"
+          }
+        ]
+      }
+    },
+    {
+      "name": "IndexedReference",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "addressContainerIndex",
+            "type": "u8"
+          },
+          {
+            "name": "indexInContainer",
+            "type": "u8"
           }
         ]
       }

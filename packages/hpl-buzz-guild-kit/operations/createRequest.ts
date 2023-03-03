@@ -51,7 +51,7 @@ export function createRequestCtx(args: CreateCreateRequestCtx): OperationCtx & {
     };
 }
 
-type CreateRequestArgs = {
+export type CreateRequestArgs = {
     args: CreateRequestArgsChain,
     guild: web3.PublicKey,
     member: web3.PublicKey,
@@ -67,7 +67,7 @@ export async function createRequest(honeycomb: Honeycomb, args: CreateRequestArg
     });
 
     return {
-        response: honeycomb.rpc().sendAndConfirmTransaction(ctx, {
+        response: await honeycomb.rpc().sendAndConfirmTransaction(ctx, {
             skipPreflight: true,
         }),
         requestAddress: ctx.request,

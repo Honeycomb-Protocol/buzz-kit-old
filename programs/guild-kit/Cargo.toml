@@ -20,7 +20,7 @@ default = []
 [dependencies]
 anchor-lang = "0.26.0"
 hpl-utils = "0.1.0"
-hpl-hive-control = { version="0.0.18", features = ["cpi"] }
+hpl-hive-control = { version="0.0.28", features = ["cpi"] }
 anchor-spl = "0.26.0"
 solana-program = "1.14.15"
 

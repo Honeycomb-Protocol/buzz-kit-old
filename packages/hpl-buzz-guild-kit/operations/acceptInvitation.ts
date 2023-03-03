@@ -21,7 +21,7 @@ export function createAcceptInvitationCtx(args: CreateAcceptInvitationCtx): Oper
     const programId = args.programId || PROGRAM_ID;
 
     // MEMBER
-    const [membershipLock] = getMembershipLockPda(programId);
+    const [membershipLock] = getMembershipLockPda(programId, args.project, args.memberNftMint);
     const [memberAddressContainer] = getAddressContainerPda(AddressContainerRole.ProjectMints, args.project, args.args.newMemberRefrence.addressContainerIndex);
     const memberAccount = getAssociatedTokenAddressSync(
         args.memberNftMint,
@@ -52,7 +52,7 @@ export function createAcceptInvitationCtx(args: CreateAcceptInvitationCtx): Oper
     };
 }
 
-type AcceptInvitationArgs = {
+export type AcceptInvitationArgs = {
     args: AcceptInvitationArgsChain,
     guild: web3.PublicKey,
     invitation: web3.PublicKey,
@@ -70,7 +70,7 @@ export async function acceptInvitation(honeycomb: Honeycomb, args: AcceptInvitat
     });
 
     return {
-        response: honeycomb.rpc().sendAndConfirmTransaction(ctx, {
+        response: await honeycomb.rpc().sendAndConfirmTransaction(ctx, {
             skipPreflight: true,
         }),
     };

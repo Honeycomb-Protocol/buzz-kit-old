@@ -15,6 +15,7 @@ impl GuildKit {
     pub const LEN: usize = 65 + 8;
 
     pub fn set_defaults(&mut self) {
+        self.kit_key = Pubkey::default();
         self.project = Pubkey::default();
         self.bump = 0;
     }

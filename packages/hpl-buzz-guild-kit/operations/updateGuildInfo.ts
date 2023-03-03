@@ -39,12 +39,11 @@ export function updateGuildCtx(args: CreateUpdateGuildInfoCtx): OperationCtx {
     };
 }
 
-type UpdateGuildInfoArgs = {
+export type UpdateGuildInfoArgs = {
     args: UpdateGuildNameArgsChain,
     guild: web3.PublicKey,
     chiefNftMint: web3.PublicKey,
     programId?: web3.PublicKey,
-
 }
 export async function updateGuild(honeycomb: Honeycomb, args: UpdateGuildInfoArgs) {
     const ctx = updateGuildCtx({
@@ -55,7 +54,7 @@ export async function updateGuild(honeycomb: Honeycomb, args: UpdateGuildInfoArg
     });
 
     return {
-        response: honeycomb.rpc().sendAndConfirmTransaction(ctx, {
+        response: await honeycomb.rpc().sendAndConfirmTransaction(ctx, {
             skipPreflight: true,
         }),
     };

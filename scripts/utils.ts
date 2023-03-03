@@ -4,7 +4,6 @@ import { Config } from './types';
 import { Connection, Keypair } from '@solana/web3.js';
 import { keypairIdentity, Metaplex } from '@metaplex-foundation/js';
 import { PROGRAM_ADDRESS } from './../packages/hpl-buzz-guild-kit/generated/index';
-import { Honeycomb } from '@honeycomb-protocol/hive-control';
 
 
 // CONFIGS

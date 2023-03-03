@@ -22,4 +22,24 @@ module.exports = {
     "programs",
     programName.replaceAll(" ", "-")
   ),
+  idlHook: (idl) => {
+    // idl.types = idl.types.filter((type) => type.name !== "IndexedReference");
+    idl.types.push({
+      name: "IndexedReference",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "addressContainerIndex",
+            type: "u8",
+          },
+          {
+            name: "indexInContainer",
+            type: "u8",
+          },
+        ],
+      },
+    });
+    return idl;
+  },
 };

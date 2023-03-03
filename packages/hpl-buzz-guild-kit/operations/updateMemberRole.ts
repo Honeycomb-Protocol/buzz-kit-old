@@ -41,7 +41,7 @@ export function updateMemberRoleCtx(args: CreateUpdateMemberRoleCtx): OperationC
     };
 }
 
-type UpdateMemberRoleCtx = {
+export type UpdateMemberRoleCtx = {
     args: UpdateMemberRoleArgsChain,
     guild: web3.PublicKey,
     chiefNftMint: web3.PublicKey,
@@ -57,7 +57,7 @@ export async function updateMemberRole(honeycomb: Honeycomb, args: UpdateMemberR
     });
 
     return {
-        response: honeycomb.rpc().sendAndConfirmTransaction(ctx, {
+        response: await honeycomb.rpc().sendAndConfirmTransaction(ctx, {
             skipPreflight: true,
         }),
     };

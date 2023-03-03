@@ -65,7 +65,7 @@ export function createInvitationCtx(args: CreateCreateInvitationCtx): OperationC
     };
 }
 
-type CreateInvitationArgs = {
+export type CreateInvitationArgs = {
     args: CreateInvitationArgsChain,
     guild: web3.PublicKey,
     member: web3.PublicKey,
@@ -83,7 +83,7 @@ export async function createInvitation(honeycomb: Honeycomb, args: CreateInvitat
     });
 
     return {
-        response: honeycomb.rpc().sendAndConfirmTransaction(ctx, {
+        response: await honeycomb.rpc().sendAndConfirmTransaction(ctx, {
             skipPreflight: true,
         }),
         invitationAddress: ctx.invitation,

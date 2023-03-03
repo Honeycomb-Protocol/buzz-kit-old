@@ -1,5 +1,5 @@
-use super::IndexedReference;
 use anchor_lang::prelude::*;
+use hpl_hive_control::state::IndexedReference;
 
 #[account]
 pub struct Invitation {

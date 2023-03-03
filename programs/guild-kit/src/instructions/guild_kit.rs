@@ -13,15 +13,17 @@ use {
 pub struct CreateGuildKit<'info> {
     /// Unique identifier for the guild
     /// CHECK: This is not dangerous because we don't read or write from this account
-    pub kit_id: AccountInfo<'info>,
+    pub kit_key: AccountInfo<'info>,
 
     /// GuildKit state account
     #[account(
-      init, payer = payer,
+      init, 
+      payer = payer,
       space = GuildKit::LEN,
       seeds = [
         b"guild_kit".as_ref(),
-        project.key().as_ref()
+        project.key().as_ref(),
+        kit_key.key().as_ref(),
       ],
       bump
     )]
@@ -65,8 +67,8 @@ pub struct CreateGuildKit<'info> {
 /// Create a new guild_kit
 pub fn create_guild_kit(ctx: Context<CreateGuildKit>) -> Result<()> {
     let guild_kit = &mut ctx.accounts.guild_kit;
-    guild_kit.set_defaults();
 
+    guild_kit.set_defaults();
     guild_kit.project = ctx.accounts.project.key();
     guild_kit.bump = ctx.bumps["guild_kit"];
 

@@ -1,29 +1,31 @@
 import * as web3 from "@solana/web3.js"
 import { createCtx, HIVECONTROL_PROGRAM_ID, Honeycomb, OperationCtx, VAULT } from "@honeycomb-protocol/hive-control";
-import { createCreateGuildKitInstruction, PROGRAM_ADDRESS } from "../generated";
+import { createCreateGuildKitInstruction, PROGRAM_ADDRESS, PROGRAM_ID } from "../generated";
 import { getGuildKitPda } from "../pdas";
 
 type CreateCreateGuildKitCtx = {
     project: web3.PublicKey,
     authority: web3.PublicKey,
     payer: web3.PublicKey,
+    delegateAuthority?: web3.PublicKey,
     programId?: web3.PublicKey,
 }
 export function createGuildKitCtx(args: CreateCreateGuildKitCtx): OperationCtx & { kitId: web3.PublicKey } {
 
     const programId = args.programId || new web3.PublicKey(PROGRAM_ADDRESS);;
-    const kitId = web3.Keypair.generate().publicKey;
+    const kitKey = web3.Keypair.generate().publicKey;
 
     // PDAS
-    const [guildKit] = getGuildKitPda(programId);
+    const [guildKit] = getGuildKitPda(programId, args.project, kitKey);
 
     const instructions: web3.TransactionInstruction[] = [
         createCreateGuildKitInstruction({
-            kitId,
+            kitKey,
             guildKit,
             project: args.project,
             authority: args.authority,
             payer: args.payer,
+            delegateAuthority: args.delegateAuthority || PROGRAM_ID,
             vault: VAULT,
             hiveControl: HIVECONTROL_PROGRAM_ID,
             rentSysvar: web3.SYSVAR_RENT_PUBKEY
@@ -32,11 +34,11 @@ export function createGuildKitCtx(args: CreateCreateGuildKitCtx): OperationCtx &
 
     return {
         ...createCtx(instructions),
-        kitId: kitId,
+        kitId: kitKey,
     };
 }
 
-type CreateGuildKitArgs = {
+export type CreateGuildKitArgs = {
     programId: web3.PublicKey,
 }
 export async function createGuildKit(honeycomb: Honeycomb, args: CreateGuildKitArgs) {
@@ -44,11 +46,12 @@ export async function createGuildKit(honeycomb: Honeycomb, args: CreateGuildKitA
         project: honeycomb.projectAddress,
         authority: honeycomb.identity().publicKey,
         payer: honeycomb.identity().publicKey,
+        delegateAuthority: honeycomb.identity().getDelegateAuthority().delegateAuthorityAddress,
         programId: args.programId,
     });
 
     return {
-        response: honeycomb.rpc().sendAndConfirmTransaction(ctx, {
+        response: await honeycomb.rpc().sendAndConfirmTransaction(ctx, {
             skipPreflight: true,
         }),
         guildKitAddress: ctx.kitId,

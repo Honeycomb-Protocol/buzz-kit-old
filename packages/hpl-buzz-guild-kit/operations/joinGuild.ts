@@ -19,7 +19,7 @@ export function joinGuildCtx(args: CreateJoinGuildCtx): OperationCtx {
     const programId = args.programId || PROGRAM_ID;
 
     // PDAS
-    const [membershipLock] = getMembershipLockPda(programId);
+    const [membershipLock] = getMembershipLockPda(programId, args.project, args.memberNftMint);
     const [memberAddressContainer] = getAddressContainerPda(AddressContainerRole.ProjectMints, args.project, args.args.newMemberRefrence.addressContainerIndex);
     const memberAccount = getAssociatedTokenAddressSync(
         args.memberNftMint,
@@ -46,14 +46,14 @@ export function joinGuildCtx(args: CreateJoinGuildCtx): OperationCtx {
     };
 }
 
-type CreateRequestArgs = {
+export type joinGuildArgs = {
     args: JoinGuildArgsChain
     guild: web3.PublicKey,
     member: web3.PublicKey,
     memberNftMint: web3.PublicKey,
     programId?: web3.PublicKey,
 }
-export async function joinGuild(honeycomb: Honeycomb, args: CreateRequestArgs) {
+export async function joinGuild(honeycomb: Honeycomb, args: joinGuildArgs) {
     const ctx = joinGuildCtx({
         ...args,
         project: honeycomb.projectAddress,
@@ -62,7 +62,7 @@ export async function joinGuild(honeycomb: Honeycomb, args: CreateRequestArgs) {
     });
 
     return {
-        response: honeycomb.rpc().sendAndConfirmTransaction(ctx, {
+        response: await honeycomb.rpc().sendAndConfirmTransaction(ctx, {
             skipPreflight: true,
         }),
     };

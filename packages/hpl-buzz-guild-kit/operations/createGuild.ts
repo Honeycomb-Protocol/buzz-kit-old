@@ -18,8 +18,8 @@ export function createGuildCtx(args: CreateCreateGuildCtx): OperationCtx & { gui
     const guildId = web3.Keypair.generate().publicKey;
 
     // PDAS
-    const [guild] = getGuildPda(programId);
-    const [membershipLock] = getMembershipLockPda(programId);
+    const [guild] = getGuildPda(programId, args.guidKit, guildId);
+    const [membershipLock] = getMembershipLockPda(programId, args.project, args.chiefNftMint);
     const [addressContainer] = getAddressContainerPda(AddressContainerRole.ProjectMints, args.project, args.args.chiefRefrence.addressContainerIndex);
     const chiefAccount = splToken.getAssociatedTokenAddressSync(
         args.chiefNftMint,
@@ -50,12 +50,13 @@ export function createGuildCtx(args: CreateCreateGuildCtx): OperationCtx & { gui
     };
 }
 
-type CreateGuildArgs = {
+export type CreateGuildArgs = {
     args: CreateGuildArgsChain,
     chiefNftMint: web3.PublicKey,
     programId?: web3.PublicKey,
 }
 export async function createGuild(honeycomb: Honeycomb, args: CreateGuildArgs) {
+    console.log(honeycomb.guildKit().guildKitAddress.toBase58(), "kit")
     const ctx = createGuildCtx({
         args: args.args,
         chiefNftMint: args.chiefNftMint,
@@ -67,7 +68,7 @@ export async function createGuild(honeycomb: Honeycomb, args: CreateGuildArgs) {
     });
 
     return {
-        response: honeycomb.rpc().sendAndConfirmTransaction(ctx, {
+        response: await honeycomb.rpc().sendAndConfirmTransaction(ctx, {
             skipPreflight: true,
         }),
         guildAddress: ctx.guild,
