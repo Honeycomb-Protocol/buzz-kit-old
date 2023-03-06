@@ -7,6 +7,7 @@ import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 type CreateJoinGuildCtx = {
     args: JoinGuildArgsChain
     project: web3.PublicKey,
+    guild_kit: web3.PublicKey,
     guild: web3.PublicKey,
     member: web3.PublicKey,
     memberNftMint: web3.PublicKey,
@@ -19,7 +20,7 @@ export function joinGuildCtx(args: CreateJoinGuildCtx): OperationCtx {
     const programId = args.programId || PROGRAM_ID;
 
     // PDAS
-    const [membershipLock] = getMembershipLockPda(programId, args.project, args.memberNftMint);
+    const [membershipLock] = getMembershipLockPda(programId, args.guild, args.memberNftMint);
     const [memberAddressContainer] = getAddressContainerPda(AddressContainerRole.ProjectMints, args.project, args.args.newMemberRefrence.addressContainerIndex);
     const memberAccount = getAssociatedTokenAddressSync(
         args.memberNftMint,
@@ -29,6 +30,7 @@ export function joinGuildCtx(args: CreateJoinGuildCtx): OperationCtx {
     const instructions: web3.TransactionInstruction[] = [
         createJoinGuildInstruction({
             guild: args.guild,
+            guildKit: args.guild_kit,
             project: args.project,
             memberAddressContainer,
             memberAccount,
@@ -56,9 +58,10 @@ export type joinGuildArgs = {
 export async function joinGuild(honeycomb: Honeycomb, args: joinGuildArgs) {
     const ctx = joinGuildCtx({
         ...args,
-        project: honeycomb.projectAddress,
+        project: honeycomb.project().projectAddress,
         payer: honeycomb.identity().publicKey,
         authority: honeycomb.identity().publicKey,
+        guild_kit: honeycomb.guildKit().guildKitAddress,
     });
 
     return {

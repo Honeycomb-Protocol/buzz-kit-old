@@ -200,6 +200,14 @@
       "name": "updateGuildInfo",
       "accounts": [
         {
+          "name": "guildKit",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "GUILD KIT"
+          ]
+        },
+        {
           "name": "guild",
           "isMut": true,
           "isSigner": false,
@@ -209,7 +217,7 @@
         },
         {
           "name": "project",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "HIVE CONTROL"
@@ -279,6 +287,14 @@
       "name": "updateMemberRole",
       "accounts": [
         {
+          "name": "guildKit",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "GUILD KIT"
+          ]
+        },
+        {
           "name": "guild",
           "isMut": true,
           "isSigner": false,
@@ -288,7 +304,7 @@
         },
         {
           "name": "project",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "HIVE CONTROL"
@@ -366,11 +382,19 @@
           ]
         },
         {
+          "name": "guildKit",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "GUILD KIT"
+          ]
+        },
+        {
           "name": "guild",
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "guild state account"
+            "Guild state account"
           ]
         },
         {
@@ -383,10 +407,10 @@
         },
         {
           "name": "project",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
-            "PROJECT"
+            "HIVE CONTROL"
           ]
         },
         {
@@ -488,6 +512,14 @@
       "name": "acceptInvitation",
       "accounts": [
         {
+          "name": "guildKit",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "GUILD KIT"
+          ]
+        },
+        {
           "name": "guild",
           "isMut": true,
           "isSigner": false,
@@ -497,7 +529,7 @@
         },
         {
           "name": "project",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "PROJECT"
@@ -602,14 +634,6 @@
           ]
         },
         {
-          "name": "guild",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "guild state account"
-          ]
-        },
-        {
           "name": "request",
           "isMut": true,
           "isSigner": false,
@@ -618,8 +642,24 @@
           ]
         },
         {
-          "name": "project",
+          "name": "guildKit",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "GUILD KIT"
+          ]
+        },
+        {
+          "name": "guild",
           "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Guild state account"
+          ]
+        },
+        {
+          "name": "project",
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "PROJECT"
@@ -708,6 +748,14 @@
       "name": "acceptRequest",
       "accounts": [
         {
+          "name": "guildKit",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "GUILD KIT"
+          ]
+        },
+        {
           "name": "guild",
           "isMut": true,
           "isSigner": false,
@@ -717,7 +765,7 @@
         },
         {
           "name": "project",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "PROJECT"
@@ -814,6 +862,14 @@
       "name": "joinGuild",
       "accounts": [
         {
+          "name": "guildKit",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "GUILD KIT"
+          ]
+        },
+        {
           "name": "guild",
           "isMut": true,
           "isSigner": false,
@@ -823,7 +879,7 @@
         },
         {
           "name": "project",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "PROJECT"
@@ -904,16 +960,24 @@
       "name": "removeMember",
       "accounts": [
         {
+          "name": "guildKit",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "GUILD KIT"
+          ]
+        },
+        {
           "name": "guild",
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "guild state account"
+            "Guild state account"
           ]
         },
         {
           "name": "project",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "PROJECT"
@@ -1023,7 +1087,7 @@
             "type": "u8"
           },
           {
-            "name": "project",
+            "name": "guildKit",
             "docs": [
               "the key to identify which project does it belong to"
             ],
@@ -1074,8 +1138,17 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "locked",
-            "type": "bool"
+            "name": "guild",
+            "docs": [
+              "the unique identifier for this guild"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "memberReference",
+            "type": {
+              "defined": "IndexedReference"
+            }
           }
         ]
       }
@@ -1317,12 +1390,6 @@
             "type": {
               "defined": "IndexedReference"
             }
-          },
-          {
-            "name": "role",
-            "type": {
-              "defined": "MemberRole"
-            }
           }
         ]
       }
@@ -1336,12 +1403,6 @@
             "name": "newMemberRefrence",
             "type": {
               "defined": "IndexedReference"
-            }
-          },
-          {
-            "name": "role",
-            "type": {
-              "defined": "MemberRole"
             }
           }
         ]
@@ -1390,12 +1451,6 @@
             "name": "newMemberRefrence",
             "type": {
               "defined": "IndexedReference"
-            }
-          },
-          {
-            "name": "role",
-            "type": {
-              "defined": "MemberRole"
             }
           }
         ]

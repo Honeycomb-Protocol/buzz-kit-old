@@ -7,7 +7,7 @@ import { createCreateGuildInstruction, PROGRAM_ID, CreateGuildArgs as CreateGuil
 type CreateCreateGuildCtx = {
     args: CreateGuildArgsChain,
     project: web3.PublicKey,
-    guidKit: web3.PublicKey,
+    guildKit: web3.PublicKey,
     chiefNftMint: web3.PublicKey,
     authority: web3.PublicKey,
     payer: web3.PublicKey,
@@ -18,8 +18,8 @@ export function createGuildCtx(args: CreateCreateGuildCtx): OperationCtx & { gui
     const guildId = web3.Keypair.generate().publicKey;
 
     // PDAS
-    const [guild] = getGuildPda(programId, args.guidKit, guildId);
-    const [membershipLock] = getMembershipLockPda(programId, args.project, args.chiefNftMint);
+    const [guild] = getGuildPda(programId, args.guildKit, guildId);
+    const [membershipLock] = getMembershipLockPda(programId, guildId, args.chiefNftMint);
     const [addressContainer] = getAddressContainerPda(AddressContainerRole.ProjectMints, args.project, args.args.chiefRefrence.addressContainerIndex);
     const chiefAccount = splToken.getAssociatedTokenAddressSync(
         args.chiefNftMint,
@@ -31,7 +31,7 @@ export function createGuildCtx(args: CreateCreateGuildCtx): OperationCtx & { gui
             guildId,
             guild,
             project: args.project,
-            guildKit: args.guidKit,
+            guildKit: args.guildKit,
             authority: args.authority,
             payer: args.payer,
             addressContainer,
@@ -46,22 +46,21 @@ export function createGuildCtx(args: CreateCreateGuildCtx): OperationCtx & { gui
 
     return {
         ...createCtx(instructions),
-        guild: guildId,
+        guild: guild,
     };
 }
 
-export type CreateGuildArgs = {
+export type createGuildArgs = {
     args: CreateGuildArgsChain,
     chiefNftMint: web3.PublicKey,
     programId?: web3.PublicKey,
 }
-export async function createGuild(honeycomb: Honeycomb, args: CreateGuildArgs) {
-    console.log(honeycomb.guildKit().guildKitAddress.toBase58(), "kit")
+export async function createGuild(honeycomb: Honeycomb, args: createGuildArgs) {
     const ctx = createGuildCtx({
         args: args.args,
         chiefNftMint: args.chiefNftMint,
-        project: honeycomb.projectAddress,
-        guidKit: honeycomb.guildKit().guildKitAddress,
+        project: honeycomb.project().projectAddress,
+        guildKit: honeycomb.guildKit().guildKitAddress,
         authority: honeycomb.identity().publicKey,
         payer: honeycomb.identity().publicKey,
         programId: args.programId,

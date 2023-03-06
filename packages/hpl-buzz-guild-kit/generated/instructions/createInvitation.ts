@@ -41,9 +41,10 @@ export const createInvitationStruct = new beet.BeetArgsStruct<
  * Accounts required by the _createInvitation_ instruction
  *
  * @property [] invitationId
+ * @property [] guildKit
  * @property [_writable_] guild
  * @property [_writable_] invitation
- * @property [_writable_] project
+ * @property [] project
  * @property [] chiefAddressContainer
  * @property [] chiefAccount
  * @property [_writable_] chief
@@ -58,6 +59,7 @@ export const createInvitationStruct = new beet.BeetArgsStruct<
  */
 export type CreateInvitationInstructionAccounts = {
   invitationId: web3.PublicKey
+  guildKit: web3.PublicKey
   guild: web3.PublicKey
   invitation: web3.PublicKey
   project: web3.PublicKey
@@ -105,6 +107,11 @@ export function createCreateInvitationInstruction(
       isSigner: false,
     },
     {
+      pubkey: accounts.guildKit,
+      isWritable: false,
+      isSigner: false,
+    },
+    {
       pubkey: accounts.guild,
       isWritable: true,
       isSigner: false,
@@ -116,7 +123,7 @@ export function createCreateInvitationInstruction(
     },
     {
       pubkey: accounts.project,
-      isWritable: true,
+      isWritable: false,
       isSigner: false,
     },
     {

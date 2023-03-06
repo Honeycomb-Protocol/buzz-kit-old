@@ -41,9 +41,10 @@ export const createRequestStruct = new beet.BeetArgsStruct<
  * Accounts required by the _createRequest_ instruction
  *
  * @property [] requestId
- * @property [_writable_] guild
  * @property [_writable_] request
- * @property [_writable_] project
+ * @property [] guildKit
+ * @property [_writable_] guild
+ * @property [] project
  * @property [] memberAddressContainer
  * @property [_writable_] memberAccount
  * @property [_writable_] member
@@ -56,8 +57,9 @@ export const createRequestStruct = new beet.BeetArgsStruct<
  */
 export type CreateRequestInstructionAccounts = {
   requestId: web3.PublicKey
-  guild: web3.PublicKey
   request: web3.PublicKey
+  guildKit: web3.PublicKey
+  guild: web3.PublicKey
   project: web3.PublicKey
   memberAddressContainer: web3.PublicKey
   memberAccount: web3.PublicKey
@@ -101,18 +103,23 @@ export function createCreateRequestInstruction(
       isSigner: false,
     },
     {
-      pubkey: accounts.guild,
-      isWritable: true,
-      isSigner: false,
-    },
-    {
       pubkey: accounts.request,
       isWritable: true,
       isSigner: false,
     },
     {
-      pubkey: accounts.project,
+      pubkey: accounts.guildKit,
+      isWritable: false,
+      isSigner: false,
+    },
+    {
+      pubkey: accounts.guild,
       isWritable: true,
+      isSigner: false,
+    },
+    {
+      pubkey: accounts.project,
+      isWritable: false,
       isSigner: false,
     },
     {

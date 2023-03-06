@@ -7,6 +7,7 @@ type CreateUpdateGuildInfoCtx = {
     args: UpdateGuildNameArgsChain,
     guild: web3.PublicKey,
     project: web3.PublicKey,
+    guild_kit: web3.PublicKey,
     chiefNftMint: web3.PublicKey,
     payer: web3.PublicKey,
     authority: web3.PublicKey,
@@ -23,6 +24,7 @@ export function updateGuildCtx(args: CreateUpdateGuildInfoCtx): OperationCtx {
     const instructions: web3.TransactionInstruction[] = [
         createUpdateGuildInfoInstruction({
             guild: args.guild,
+            guildKit: args.guild_kit,
             project: args.project,
             payer: args.payer,
             authority: args.authority,
@@ -39,18 +41,19 @@ export function updateGuildCtx(args: CreateUpdateGuildInfoCtx): OperationCtx {
     };
 }
 
-export type UpdateGuildInfoArgs = {
+export type updateGuildInfoArgs = {
     args: UpdateGuildNameArgsChain,
     guild: web3.PublicKey,
     chiefNftMint: web3.PublicKey,
     programId?: web3.PublicKey,
 }
-export async function updateGuild(honeycomb: Honeycomb, args: UpdateGuildInfoArgs) {
+export async function updateGuild(honeycomb: Honeycomb, args: updateGuildInfoArgs) {
     const ctx = updateGuildCtx({
         ...args,
-        project: honeycomb.projectAddress,
+        project: honeycomb.project().projectAddress,
         payer: honeycomb.identity().publicKey,
         authority: honeycomb.identity().publicKey,
+        guild_kit: honeycomb.guildKit().guildKitAddress,
     });
 
     return {

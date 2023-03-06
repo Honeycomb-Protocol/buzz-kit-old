@@ -20,7 +20,7 @@ import { JoiningCriteria, joiningCriteriaBeet } from '../types/JoiningCriteria'
 export type GuildArgs = {
   guildId: web3.PublicKey
   bump: number
-  project: web3.PublicKey
+  guildKit: web3.PublicKey
   name: string
   members: Member[]
   visibility: GuildVisibility
@@ -39,7 +39,7 @@ export class Guild implements GuildArgs {
   private constructor(
     readonly guildId: web3.PublicKey,
     readonly bump: number,
-    readonly project: web3.PublicKey,
+    readonly guildKit: web3.PublicKey,
     readonly name: string,
     readonly members: Member[],
     readonly visibility: GuildVisibility,
@@ -53,7 +53,7 @@ export class Guild implements GuildArgs {
     return new Guild(
       args.guildId,
       args.bump,
-      args.project,
+      args.guildKit,
       args.name,
       args.members,
       args.visibility,
@@ -168,7 +168,7 @@ export class Guild implements GuildArgs {
     return {
       guildId: this.guildId.toBase58(),
       bump: this.bump,
-      project: this.project.toBase58(),
+      guildKit: this.guildKit.toBase58(),
       name: this.name,
       members: this.members,
       visibility: 'GuildVisibility.' + GuildVisibility[this.visibility],
@@ -192,7 +192,7 @@ export const guildBeet = new beet.FixableBeetStruct<
     ['accountDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
     ['guildId', beetSolana.publicKey],
     ['bump', beet.u8],
-    ['project', beetSolana.publicKey],
+    ['guildKit', beetSolana.publicKey],
     ['name', beet.utf8String],
     ['members', beet.array(memberBeet)],
     ['visibility', guildVisibilityBeet],

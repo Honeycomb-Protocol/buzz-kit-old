@@ -69,6 +69,7 @@ pub fn create_guild_kit(ctx: Context<CreateGuildKit>) -> Result<()> {
     let guild_kit = &mut ctx.accounts.guild_kit;
 
     guild_kit.set_defaults();
+    guild_kit.kit_key = ctx.accounts.kit_key.key();
     guild_kit.project = ctx.accounts.project.key();
     guild_kit.bump = ctx.bumps["guild_kit"];
 

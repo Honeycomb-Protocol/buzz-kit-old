@@ -12,15 +12,16 @@ use {
 #[derive(Accounts)]
 #[instruction(args: RemoveArgs)]
 pub struct Remove<'info> {
-    /// guild state account
-    #[account(mut)]
+    /// GUILD KIT
+    #[account(has_one = project)]
+    pub guild_kit: Box<Account<'info, GuildKit>>,
+
+    /// Guild state account
+    #[account(mut, has_one = guild_kit)]
     pub guild: Box<Account<'info, Guild>>,
 
     /// PROJECT
-    #[account(
-        mut,
-        constraint = project.key() == guild.project
-    )]
+    #[account()]
     pub project: Box<Account<'info, Project>>,
 
     /// Address container that stores the mint addresss of the collections
@@ -74,9 +75,9 @@ pub fn remove_member(ctx: Context<Remove>, args: RemoveArgs) -> Result<()> {
     let member_address_container = &ctx.accounts.member_address_container;
 
     // Check if member reference is in the address container
-    if assert_indexed_reference(
-        args.new_member_refrence.clone(),
-        member_address_container.clone(),
+    if !assert_indexed_reference(
+        &args.new_member_refrence,
+        member_address_container,
         member_account.mint,
     )
     .unwrap()

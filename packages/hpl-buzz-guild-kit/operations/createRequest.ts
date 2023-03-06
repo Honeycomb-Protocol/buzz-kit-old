@@ -8,6 +8,7 @@ type CreateCreateRequestCtx = {
     args: CreateRequestArgsChain,
     project: web3.PublicKey,
     guild: web3.PublicKey,
+    guild_kit: web3.PublicKey,
     member: web3.PublicKey,
     memberNftMint: web3.PublicKey,
     payer: web3.PublicKey,
@@ -20,7 +21,7 @@ export function createRequestCtx(args: CreateCreateRequestCtx): OperationCtx & {
     const requestId = web3.Keypair.generate().publicKey;
 
     // PDAS
-    const [request] = getRequestPda(programId);
+    const [request] = getRequestPda(programId, args.guild, requestId);
     const [memberAddressContainer] = getAddressContainerPda(AddressContainerRole.ProjectMints, args.project, args.args.newMemberRefrence.addressContainerIndex);
     const memberAccount = getAssociatedTokenAddressSync(
         args.memberNftMint,
@@ -31,6 +32,7 @@ export function createRequestCtx(args: CreateCreateRequestCtx): OperationCtx & {
         createCreateRequestInstruction({
             requestId,
             guild: args.guild,
+            guildKit: args.guild_kit,
             request,
             project: args.project,
             memberAddressContainer,
@@ -47,23 +49,24 @@ export function createRequestCtx(args: CreateCreateRequestCtx): OperationCtx & {
 
     return {
         ...createCtx(instructions),
-        request: requestId,
+        request: request,
     };
 }
 
-export type CreateRequestArgs = {
+export type createRequestArgs = {
     args: CreateRequestArgsChain,
     guild: web3.PublicKey,
     member: web3.PublicKey,
     memberNftMint: web3.PublicKey,
     programId?: web3.PublicKey,
 }
-export async function createRequest(honeycomb: Honeycomb, args: CreateRequestArgs) {
+export async function createRequest(honeycomb: Honeycomb, args: createRequestArgs) {
     const ctx = createRequestCtx({
         ...args,
         payer: honeycomb.identity().publicKey,
         authority: honeycomb.identity().publicKey,
-        project: honeycomb.projectAddress,
+        project: honeycomb.project().projectAddress,
+        guild_kit: honeycomb.guildKit().guildKitAddress,
     });
 
     return {

@@ -1,5 +1,5 @@
 import * as web3 from "@solana/web3.js"
-import { getMembershipLockPda } from "../pdas";
+import { getInvitationPda, getMembershipLockPda } from "../pdas";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { createAcceptInvitationInstruction, AcceptInvitationArgs as AcceptInvitationArgsChain, PROGRAM_ID } from "../generated";
 import { AddressContainerRole, createCtx, getAddressContainerPda, Honeycomb, OperationCtx, VAULT } from "@honeycomb-protocol/hive-control";
@@ -7,6 +7,7 @@ import { AddressContainerRole, createCtx, getAddressContainerPda, Honeycomb, Ope
 type CreateAcceptInvitationCtx = {
     args: AcceptInvitationArgsChain,
     project: web3.PublicKey,
+    guild_kit: web3.PublicKey,
     guild: web3.PublicKey,
     payer: web3.PublicKey,
     authority: web3.PublicKey,
@@ -19,9 +20,8 @@ type CreateAcceptInvitationCtx = {
 export function createAcceptInvitationCtx(args: CreateAcceptInvitationCtx): OperationCtx {
 
     const programId = args.programId || PROGRAM_ID;
-
-    // MEMBER
-    const [membershipLock] = getMembershipLockPda(programId, args.project, args.memberNftMint);
+    const [invitation] = getInvitationPda(programId, args.guild, args.invitation);
+    const [membershipLock] = getMembershipLockPda(programId, args.guild, args.memberNftMint);
     const [memberAddressContainer] = getAddressContainerPda(AddressContainerRole.ProjectMints, args.project, args.args.newMemberRefrence.addressContainerIndex);
     const memberAccount = getAssociatedTokenAddressSync(
         args.memberNftMint,
@@ -32,9 +32,10 @@ export function createAcceptInvitationCtx(args: CreateAcceptInvitationCtx): Oper
 
     const instructions: web3.TransactionInstruction[] = [
         createAcceptInvitationInstruction({
-            guild: args.guild,
             project: args.project,
-            invitation: args.invitation,
+            guild: args.guild,
+            guildKit: args.guild_kit,
+            invitation,
             memberAddressContainer,
             memberAccount,
             membershipLock,
@@ -52,7 +53,7 @@ export function createAcceptInvitationCtx(args: CreateAcceptInvitationCtx): Oper
     };
 }
 
-export type AcceptInvitationArgs = {
+export type acceptInvitationArgs = {
     args: AcceptInvitationArgsChain,
     guild: web3.PublicKey,
     invitation: web3.PublicKey,
@@ -61,12 +62,13 @@ export type AcceptInvitationArgs = {
     chief: web3.PublicKey,
     programId?: web3.PublicKey,
 }
-export async function acceptInvitation(honeycomb: Honeycomb, args: AcceptInvitationArgs) {
+export async function acceptInvitation(honeycomb: Honeycomb, args: acceptInvitationArgs) {
     const ctx = createAcceptInvitationCtx({
         ...args,
-        project: honeycomb.projectAddress,
+        project: honeycomb.project().projectAddress,
         payer: honeycomb.identity().publicKey,
         authority: honeycomb.identity().publicKey,
+        guild_kit: honeycomb.guildKit().guildKitAddress,
     });
 
     return {

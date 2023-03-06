@@ -37,8 +37,9 @@ export const removeMemberStruct = new beet.BeetArgsStruct<
 /**
  * Accounts required by the _removeMember_ instruction
  *
+ * @property [] guildKit
  * @property [_writable_] guild
- * @property [_writable_] project
+ * @property [] project
  * @property [] memberAddressContainer
  * @property [_writable_] memberAccount
  * @property [_writable_] member
@@ -50,6 +51,7 @@ export const removeMemberStruct = new beet.BeetArgsStruct<
  * @category generated
  */
 export type RemoveMemberInstructionAccounts = {
+  guildKit: web3.PublicKey
   guild: web3.PublicKey
   project: web3.PublicKey
   memberAddressContainer: web3.PublicKey
@@ -89,13 +91,18 @@ export function createRemoveMemberInstruction(
   })
   const keys: web3.AccountMeta[] = [
     {
+      pubkey: accounts.guildKit,
+      isWritable: false,
+      isSigner: false,
+    },
+    {
       pubkey: accounts.guild,
       isWritable: true,
       isSigner: false,
     },
     {
       pubkey: accounts.project,
-      isWritable: true,
+      isWritable: false,
       isSigner: false,
     },
     {

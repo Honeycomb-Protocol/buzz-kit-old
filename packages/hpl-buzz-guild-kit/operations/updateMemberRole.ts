@@ -6,6 +6,7 @@ import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 type CreateUpdateMemberRoleCtx = {
     args: UpdateMemberRoleArgsChain,
     project: web3.PublicKey,
+    guild_kit: web3.PublicKey,
     guild: web3.PublicKey,
     chiefNftMint: web3.PublicKey,
     memberNftMint: web3.PublicKey,
@@ -14,9 +15,7 @@ type CreateUpdateMemberRoleCtx = {
     programId?: web3.PublicKey,
 }
 export function updateMemberRoleCtx(args: CreateUpdateMemberRoleCtx): OperationCtx {
-
     const [addressContainer] = getAddressContainerPda(AddressContainerRole.ProjectMints, args.project, args.args.chiefRefrence.addressContainerIndex);
-    //  CHIEF
     const chiefAccount = getAssociatedTokenAddressSync(
         args.chiefNftMint,
         args.authority
@@ -25,6 +24,7 @@ export function updateMemberRoleCtx(args: CreateUpdateMemberRoleCtx): OperationC
     const instructions: web3.TransactionInstruction[] = [
         createUpdateMemberRoleInstruction({
             project: args.project,
+            guildKit: args.guild_kit,
             guild: args.guild,
             chiefAccount,
             addressContainer,
@@ -41,19 +41,20 @@ export function updateMemberRoleCtx(args: CreateUpdateMemberRoleCtx): OperationC
     };
 }
 
-export type UpdateMemberRoleCtx = {
+export type updateMemberRoleCtx = {
     args: UpdateMemberRoleArgsChain,
     guild: web3.PublicKey,
     chiefNftMint: web3.PublicKey,
     memberNftMint: web3.PublicKey,
     programId?: web3.PublicKey,
 }
-export async function updateMemberRole(honeycomb: Honeycomb, args: UpdateMemberRoleCtx) {
+export async function updateMemberRole(honeycomb: Honeycomb, args: updateMemberRoleCtx) {
     const ctx = updateMemberRoleCtx({
         ...args,
-        project: honeycomb.projectAddress,
+        project: honeycomb.project().projectAddress,
         payer: honeycomb.identity().publicKey,
         authority: honeycomb.identity().publicKey,
+        guild_kit: honeycomb.guildKit().guildKitAddress,
     });
 
     return {

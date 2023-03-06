@@ -2,7 +2,15 @@
   "guild_kit": {
     "devnet": {
       "program": "38foo9CSfPiPZTBvNhouNaYpvkzKEzWW396PUW2GKPVA",
-      "kit": "7XEgqQLb7u9EoFJCcYfDdTscw5Ycqj33ju8C4a9afgJ5"
+      "guild_kit": {
+        "address": "4VaLj4HiYK6YqTVcazZJVhmwiJB5qCNYhf3n14bnMVrP",
+        "guilds": [
+          {
+            "address": "4xrrHo3Q2EKYocpMyqxKkuM38GTJt3zNGRAzZcB8LPoC",
+            "chiefNftMint": "2cNg4XLPWdkSBWGDDY562h7WpG4hJ5GtnYRbkbvBoU7g"
+          }
+        ]
+      }
     }
   }
 }

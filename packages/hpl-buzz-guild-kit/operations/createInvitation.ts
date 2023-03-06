@@ -8,6 +8,7 @@ type CreateCreateInvitationCtx = {
     args: CreateInvitationArgsChain,
     project: web3.PublicKey,
     guild: web3.PublicKey,
+    guild_kit: web3.PublicKey,
     member: web3.PublicKey,
     memberNftMint: web3.PublicKey,
     chief: web3.PublicKey,
@@ -22,7 +23,7 @@ export function createInvitationCtx(args: CreateCreateInvitationCtx): OperationC
     const invitationId = web3.Keypair.generate().publicKey;
 
     // PDAS
-    const [invitation] = getInvitationPda(programId);
+    const [invitation] = getInvitationPda(programId, args.guild, invitationId);
 
     // CHIEF
     const [chiefAddressContainer] = getAddressContainerPda(AddressContainerRole.ProjectMints, args.project, args.args.chiefRefrence.addressContainerIndex);
@@ -42,6 +43,7 @@ export function createInvitationCtx(args: CreateCreateInvitationCtx): OperationC
         createCreateInvitationInstruction({
             invitationId,
             guild: args.guild,
+            guildKit: args.guild_kit,
             invitation,
             project: args.project,
             memberAddressContainer,
@@ -61,11 +63,11 @@ export function createInvitationCtx(args: CreateCreateInvitationCtx): OperationC
 
     return {
         ...createCtx(instructions),
-        invitation: invitationId,
+        invitation: invitation,
     };
 }
 
-export type CreateInvitationArgs = {
+export type createInvitationArgs = {
     args: CreateInvitationArgsChain,
     guild: web3.PublicKey,
     member: web3.PublicKey,
@@ -74,12 +76,13 @@ export type CreateInvitationArgs = {
     chiefNftMint: web3.PublicKey,
     programId?: web3.PublicKey,
 }
-export async function createInvitation(honeycomb: Honeycomb, args: CreateInvitationArgs) {
+export async function createInvitation(honeycomb: Honeycomb, args: createInvitationArgs) {
     const ctx = createInvitationCtx({
         ...args,
         payer: honeycomb.identity().publicKey,
         authority: honeycomb.identity().publicKey,
-        project: honeycomb.projectAddress,
+        project: honeycomb.project().projectAddress,
+        guild_kit: honeycomb.guildKit().guildKitAddress,
     });
 
     return {

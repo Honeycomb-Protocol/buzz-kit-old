@@ -5,9 +5,13 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
 import * as web3 from '@solana/web3.js'
 import * as beetSolana from '@metaplex-foundation/beet-solana'
+import * as beet from '@metaplex-foundation/beet'
+import {
+  IndexedReference,
+  indexedReferenceBeet,
+} from '../types/IndexedReference'
 
 /**
  * Arguments used to create {@link MembershipLock}
@@ -15,7 +19,8 @@ import * as beetSolana from '@metaplex-foundation/beet-solana'
  * @category generated
  */
 export type MembershipLockArgs = {
-  locked: boolean
+  guild: web3.PublicKey
+  memberReference: IndexedReference
 }
 
 export const membershipLockDiscriminator = [30, 222, 85, 175, 67, 133, 40, 43]
@@ -27,13 +32,16 @@ export const membershipLockDiscriminator = [30, 222, 85, 175, 67, 133, 40, 43]
  * @category generated
  */
 export class MembershipLock implements MembershipLockArgs {
-  private constructor(readonly locked: boolean) {}
+  private constructor(
+    readonly guild: web3.PublicKey,
+    readonly memberReference: IndexedReference
+  ) {}
 
   /**
    * Creates a {@link MembershipLock} instance from the provided args.
    */
   static fromArgs(args: MembershipLockArgs) {
-    return new MembershipLock(args.locked)
+    return new MembershipLock(args.guild, args.memberReference)
   }
 
   /**
@@ -139,7 +147,8 @@ export class MembershipLock implements MembershipLockArgs {
    */
   pretty() {
     return {
-      locked: this.locked,
+      guild: this.guild.toBase58(),
+      memberReference: this.memberReference,
     }
   }
 }
@@ -156,7 +165,8 @@ export const membershipLockBeet = new beet.BeetStruct<
 >(
   [
     ['accountDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['locked', beet.bool],
+    ['guild', beetSolana.publicKey],
+    ['memberReference', indexedReferenceBeet],
   ],
   MembershipLock.fromArgs,
   'MembershipLock'

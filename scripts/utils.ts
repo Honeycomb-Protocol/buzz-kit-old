@@ -2,8 +2,8 @@ import fs from 'fs';
 import key from '../key.json';
 import { Config } from './types';
 import { Connection, Keypair } from '@solana/web3.js';
-import { keypairIdentity, Metaplex } from '@metaplex-foundation/js';
 import { PROGRAM_ADDRESS } from './../packages/hpl-buzz-guild-kit/generated/index';
+import { Honeycomb, identityModule } from '@honeycomb-protocol/hive-control';
 
 
 // CONFIGS
@@ -79,8 +79,9 @@ export const getDependencies = (
   const keypair = Keypair.fromSecretKey(Uint8Array.from(key));
 
   const connection = new Connection(config.endpoint);
-  const mx = new Metaplex(connection);
-  mx.use(keypairIdentity(keypair));
+
+  const honeycomb = new Honeycomb(connection);
+  honeycomb.use(identityModule(keypair));
 
   const setDeploymentsLocal = (deployments) =>
     setDeployments(programName, network, deployments);
@@ -100,7 +101,7 @@ export const getDependencies = (
     connection,
     deployments,
     signer: keypair,
-    mx,
+    honeycomb,
     setDeployments: setDeploymentsLocal,
   };
 };

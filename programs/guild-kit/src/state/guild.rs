@@ -11,7 +11,7 @@ pub struct Guild {
     pub bump: u8,
 
     /// the key to identify which project does it belong to
-    pub project: Pubkey,
+    pub guild_kit: Pubkey,
 
     /// the name of the guild
     pub name: String,
@@ -31,7 +31,7 @@ impl Guild {
     pub fn set_defaults(&mut self) {
         self.guild_id = Pubkey::default();
         self.bump = 0;
-        self.project = Pubkey::default();
+        self.guild_kit = Pubkey::default();
         self.name = "".to_string();
         self.members = vec![];
         self.visibility = GuildVisibility::Public;
@@ -41,13 +41,18 @@ impl Guild {
 
 #[account]
 pub struct MembershipLock {
-    pub locked: bool,
+    /// the unique identifier for this guild
+    pub guild: Pubkey,
+
+    // member reference
+    pub member_reference: IndexedReference,
 }
 impl MembershipLock {
-    pub const LEN: usize = 1 + 8;
+    pub const LEN: usize = 34 + 8;
 
     pub fn set_defaults(&mut self) {
-        self.locked = true;
+        self.guild = Pubkey::default();
+        self.member_reference = IndexedReference::default();
     }
 }
 

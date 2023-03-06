@@ -40,8 +40,9 @@ export const updateGuildInfoStruct = new beet.FixableBeetArgsStruct<
 /**
  * Accounts required by the _updateGuildInfo_ instruction
  *
+ * @property [] guildKit
  * @property [_writable_] guild
- * @property [_writable_] project
+ * @property [] project
  * @property [] addressContainer
  * @property [] chiefAccount
  * @property [_writable_, **signer**] payer
@@ -52,6 +53,7 @@ export const updateGuildInfoStruct = new beet.FixableBeetArgsStruct<
  * @category generated
  */
 export type UpdateGuildInfoInstructionAccounts = {
+  guildKit: web3.PublicKey
   guild: web3.PublicKey
   project: web3.PublicKey
   addressContainer: web3.PublicKey
@@ -89,13 +91,18 @@ export function createUpdateGuildInfoInstruction(
   })
   const keys: web3.AccountMeta[] = [
     {
+      pubkey: accounts.guildKit,
+      isWritable: false,
+      isSigner: false,
+    },
+    {
       pubkey: accounts.guild,
       isWritable: true,
       isSigner: false,
     },
     {
       pubkey: accounts.project,
-      isWritable: true,
+      isWritable: false,
       isSigner: false,
     },
     {

@@ -7,10 +7,8 @@
 
 import * as beet from '@metaplex-foundation/beet'
 import { IndexedReference, indexedReferenceBeet } from './IndexedReference'
-import { MemberRole, memberRoleBeet } from './MemberRole'
 export type JoinGuildArgs = {
   newMemberRefrence: IndexedReference
-  role: MemberRole
 }
 
 /**
@@ -18,9 +16,6 @@ export type JoinGuildArgs = {
  * @category generated
  */
 export const joinGuildArgsBeet = new beet.BeetArgsStruct<JoinGuildArgs>(
-  [
-    ['newMemberRefrence', indexedReferenceBeet],
-    ['role', memberRoleBeet],
-  ],
+  [['newMemberRefrence', indexedReferenceBeet]],
   'JoinGuildArgs'
 )

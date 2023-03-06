@@ -16,10 +16,6 @@ pub struct CreateRequest<'info> {
     /// CHECK: This is not dangerous because we don't read or write from this account
     pub request_id: AccountInfo<'info>,
 
-    /// guild state account
-    #[account(mut)]
-    pub guild: Box<Account<'info, Guild>>,
-
     /// Request state account
     #[account(
         init, payer = payer,
@@ -33,11 +29,16 @@ pub struct CreateRequest<'info> {
     )]
     pub request: Box<Account<'info, Request>>,
 
+    /// GUILD KIT
+    #[account(has_one = project)]
+    pub guild_kit: Box<Account<'info, GuildKit>>,
+
+    /// Guild state account
+    #[account(mut, has_one = guild_kit)]
+    pub guild: Box<Account<'info, Guild>>,
+
     /// PROJECT
-    #[account(
-        mut,
-        constraint = project.key() == guild.project
-    )]
+    #[account()]
     pub project: Box<Account<'info, Project>>,
 
     /// Address container that stores the mint addresss of the collections
@@ -88,9 +89,9 @@ pub fn create_request(ctx: Context<CreateRequest>, args: CreateRequestArgs) -> R
     let member_address_container = &ctx.accounts.member_address_container;
 
     // Check if member reference is in the address container
-    if assert_indexed_reference(
-        args.new_member_refrence,
-        member_address_container.clone(),
+    if !assert_indexed_reference(
+        &args.new_member_refrence,
+        member_address_container,
         member_account.mint,
     )
     .unwrap()
@@ -110,15 +111,16 @@ pub fn create_request(ctx: Context<CreateRequest>, args: CreateRequestArgs) -> R
 #[derive(Accounts)]
 #[instruction(args: AcceptRequestArgs)]
 pub struct AcceptRequest<'info> {
+    /// GUILD KIT
+    #[account(has_one = project)]
+    pub guild_kit: Box<Account<'info, GuildKit>>,
+
     /// Guild state account
-    #[account(mut)]
+    #[account(mut, has_one = guild_kit)]
     pub guild: Box<Account<'info, Guild>>,
 
     /// PROJECT
-    #[account(
-        mut,
-        constraint = project.key() == guild.project
-    )]
+    #[account()]
     pub project: Box<Account<'info, Project>>,
 
     /// Address container that stores the mint addresss of the collections
@@ -143,7 +145,7 @@ pub struct AcceptRequest<'info> {
         init,
           seeds = [
               b"membership_lock".as_ref(),
-              project.key().as_ref(),
+              guild.key().as_ref(),
               member_account.mint.as_ref()
           ],
           bump,
@@ -176,19 +178,19 @@ pub struct AcceptRequest<'info> {
 pub struct AcceptRequestArgs {
     pub chief_refrence: IndexedReference,
     pub new_member_refrence: IndexedReference,
-    pub role: MemberRole,
 }
 
 /// Add a member to a guild
 pub fn accept_request(ctx: Context<AcceptRequest>, args: AcceptRequestArgs) -> Result<()> {
     let guild = &mut ctx.accounts.guild;
+    let member_lock = &mut ctx.accounts.membership_lock;
     let member_account = &ctx.accounts.member_account;
     let member_address_container = &ctx.accounts.member_address_container;
 
     // Check if member reference is in the address container
-    if assert_indexed_reference(
-        args.new_member_refrence.clone(),
-        member_address_container.clone(),
+    if !assert_indexed_reference(
+        &args.new_member_refrence,
+        member_address_container,
         member_account.mint,
     )
     .unwrap()
@@ -198,9 +200,13 @@ pub fn accept_request(ctx: Context<AcceptRequest>, args: AcceptRequestArgs) -> R
 
     // adding member to the guild
     guild.members.push(Member {
-        reference: args.new_member_refrence,
-        role: args.role,
+        reference: args.new_member_refrence.clone(),
+        role: MemberRole::Member,
     });
+
+    // locking membership
+    member_lock.guild = guild.key();
+    member_lock.member_reference = args.new_member_refrence;
 
     Ok(())
 }

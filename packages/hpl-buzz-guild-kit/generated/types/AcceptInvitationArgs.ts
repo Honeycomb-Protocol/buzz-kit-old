@@ -7,11 +7,9 @@
 
 import * as beet from '@metaplex-foundation/beet'
 import { IndexedReference, indexedReferenceBeet } from './IndexedReference'
-import { MemberRole, memberRoleBeet } from './MemberRole'
 export type AcceptInvitationArgs = {
   chiefRefrence: IndexedReference
   newMemberRefrence: IndexedReference
-  role: MemberRole
 }
 
 /**
@@ -23,7 +21,6 @@ export const acceptInvitationArgsBeet =
     [
       ['chiefRefrence', indexedReferenceBeet],
       ['newMemberRefrence', indexedReferenceBeet],
-      ['role', memberRoleBeet],
     ],
     'AcceptInvitationArgs'
   )

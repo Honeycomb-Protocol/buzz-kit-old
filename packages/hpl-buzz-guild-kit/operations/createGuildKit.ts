@@ -34,19 +34,19 @@ export function createGuildKitCtx(args: CreateCreateGuildKitCtx): OperationCtx &
 
     return {
         ...createCtx(instructions),
-        kitId: kitKey,
+        kitId: guildKit,
     };
 }
 
-export type CreateGuildKitArgs = {
+export type createGuildKitArgs = {
     programId: web3.PublicKey,
 }
-export async function createGuildKit(honeycomb: Honeycomb, args: CreateGuildKitArgs) {
+export async function createGuildKit(honeycomb: Honeycomb, args: createGuildKitArgs) {
     const ctx = createGuildKitCtx({
-        project: honeycomb.projectAddress,
+        project: honeycomb.project().projectAddress,
         authority: honeycomb.identity().publicKey,
         payer: honeycomb.identity().publicKey,
-        delegateAuthority: honeycomb.identity().getDelegateAuthority().delegateAuthorityAddress,
+        delegateAuthority: honeycomb.identity().delegateAuthority().address,
         programId: args.programId,
     });
 

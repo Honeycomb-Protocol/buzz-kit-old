@@ -4,8 +4,8 @@ use {
     anchor_lang::prelude::*,
     anchor_spl::token::{self, Token, TokenAccount},
     hpl_hive_control::{
-        state::{AddressContainer, AddressContainerRole, Project, IndexedReference},
         assertions::assert_indexed_reference,
+        state::{AddressContainer, AddressContainerRole, IndexedReference, Project},
     },
 };
 
@@ -18,7 +18,8 @@ pub struct CreateGuild<'info> {
 
     /// Guild state account
     #[account(
-      init, payer = payer,
+      init, 
+      payer = payer,
       space = Guild::LEN,
       seeds = [
         b"guild".as_ref(),
@@ -30,13 +31,7 @@ pub struct CreateGuild<'info> {
     pub guild: Box<Account<'info, Guild>>,
 
     /// GUILD KIT
-    #[account(mut, 
-        seeds = [
-            b"guild_kit".as_ref(),
-            project.key().as_ref()
-        ],
-      bump = guild_kit.bump
-    )]
+    #[account(mut)]
     pub guild_kit: Box<Account<'info, GuildKit>>,
 
     /// HIVE CONTROL
@@ -55,7 +50,7 @@ pub struct CreateGuild<'info> {
         init,
           seeds = [
               b"membership_lock".as_ref(),
-              project.key().as_ref(),
+              guild_id.key().as_ref(),
               chief_account.mint.as_ref()
           ],
           bump,
@@ -98,45 +93,59 @@ pub struct CreateGuildArgs {
 
 /// Create a new guild
 pub fn create_guild(ctx: Context<CreateGuild>, args: CreateGuildArgs) -> Result<()> {
+    msg!("Creating Guild");
     let membership_lock = &mut ctx.accounts.membership_lock;
     let chief_account = &mut ctx.accounts.chief_account;
     let guild = &mut ctx.accounts.guild;
-    let address_container = &mut ctx.accounts.address_container;
+    let address_container = &ctx.accounts.address_container;
     
-    if assert_indexed_reference(args.chief_refrence.clone(), address_container.clone(), chief_account.mint).unwrap() {
-        return Err(ErrorCode::MemberRefrenceVerificationFailed.into());
+    
+    if !assert_indexed_reference(
+        &args.chief_refrence,
+        address_container,
+        chief_account.mint,
+    )
+    .unwrap()
+    {
+        return Err(ErrorCode::ChiefNotFound.into());
     }
-
+    
     guild.set_defaults();
     membership_lock.set_defaults();
 
-    guild.project = ctx.accounts.project.key();
-    guild.bump = ctx.bumps["guild"];
-    guild.guild_id = ctx.accounts.guild_id.key();
+    // set the guild configs    
     guild.name = args.name;
     guild.members.push(Member {
         role: MemberRole::Chief,
-        reference: args.chief_refrence,
+        reference: args.chief_refrence.clone(),
     });
     guild.visibility = args.visibility;
     guild.joining_criteria = args.joining_criteria;
+    guild.guild_kit = ctx.accounts.guild_kit.key();
+    guild.guild_id = ctx.accounts.guild_id.key();
 
+    // set the membership lock configs
+    membership_lock.guild = ctx.accounts.guild.key();
+    membership_lock.member_reference = args.chief_refrence;
+
+    msg!("GUILD CREATED");
     Ok(())
 }
-
 
 /// Accounts used in update guild's info context & instructions
 #[derive(Accounts)]
 pub struct UpdateGuildInfo<'info> {
+
+    /// GUILD KIT
+    #[account(has_one = project)]
+    pub guild_kit: Box<Account<'info, GuildKit>>,
+
     /// Guild state account
-    #[account(mut)]
+    #[account(mut, has_one = guild_kit)]
     pub guild: Box<Account<'info, Guild>>,
 
     /// HIVE CONTROL
-    #[account(
-        mut,
-        constraint = project.key() == guild.project
-    )]
+    #[account()]
     pub project: Box<Account<'info, Project>>,
 
     /// Address container that stores the mint addresss of the collections
@@ -180,26 +189,31 @@ pub fn update_guild_info(ctx: Context<UpdateGuildInfo>, args: UpdateGuildNameArg
     let chief_account = &mut ctx.accounts.chief_account;
     let address_container = &mut ctx.accounts.address_container;
 
-    if assert_indexed_reference(args.chief_refrence.clone(), address_container.clone(), chief_account.mint).unwrap() {
+    if !assert_indexed_reference(
+        &args.chief_refrence,
+        address_container,
+        chief_account.mint,
+    )
+    .unwrap()
+    {
         return Err(ErrorCode::MemberRefrenceVerificationFailed.into());
     }
-    
+
     // Check if the chief reference is valid
     guild
         .members
         .iter()
-        .find(|member| member.reference == args.chief_refrence 
-            && member.role == MemberRole::Chief)
+        .find(|member| member.reference == args.chief_refrence && member.role == MemberRole::Chief)
         .ok_or(ErrorCode::ChiefNotFound)?;
 
     guild.name = args.name.unwrap_or(guild.name.clone());
     guild.visibility = args.visibility.unwrap_or(guild.visibility.clone());
-    guild.joining_criteria = args.joining_criteria.unwrap_or(guild.joining_criteria.clone());
+    guild.joining_criteria = args
+        .joining_criteria
+        .unwrap_or(guild.joining_criteria.clone());
 
     Ok(())
 }
-
-
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
 pub struct UpdateMemberRoleArgs {
@@ -210,18 +224,18 @@ pub struct UpdateMemberRoleArgs {
 
 /// Update member role in a guild
 pub fn update_member_role(ctx: Context<UpdateGuildInfo>, args: UpdateMemberRoleArgs) -> Result<()> {
-    let guild = &mut ctx.accounts.guild;    
+    let guild = &mut ctx.accounts.guild;
 
     // Check if the chief reference is valid
     guild
         .members
         .iter()
-        .find(|member| member.reference == args.chief_refrence 
-            && member.role == MemberRole::Chief)
+        .find(|member| member.reference == args.chief_refrence && member.role == MemberRole::Chief)
         .ok_or(ErrorCode::ChiefNotFound)?;
 
     // Check if the member reference is valid
-    let member = guild.members
+    let member = guild
+        .members
         .iter_mut()
         .find(|member| member.reference == args.member_refrence)
         .ok_or(ErrorCode::MemberNotFound)?;

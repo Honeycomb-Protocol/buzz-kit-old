@@ -40,8 +40,9 @@ export const updateMemberRoleStruct = new beet.BeetArgsStruct<
 /**
  * Accounts required by the _updateMemberRole_ instruction
  *
+ * @property [] guildKit
  * @property [_writable_] guild
- * @property [_writable_] project
+ * @property [] project
  * @property [] addressContainer
  * @property [] chiefAccount
  * @property [_writable_, **signer**] payer
@@ -52,6 +53,7 @@ export const updateMemberRoleStruct = new beet.BeetArgsStruct<
  * @category generated
  */
 export type UpdateMemberRoleInstructionAccounts = {
+  guildKit: web3.PublicKey
   guild: web3.PublicKey
   project: web3.PublicKey
   addressContainer: web3.PublicKey
@@ -89,13 +91,18 @@ export function createUpdateMemberRoleInstruction(
   })
   const keys: web3.AccountMeta[] = [
     {
+      pubkey: accounts.guildKit,
+      isWritable: false,
+      isSigner: false,
+    },
+    {
       pubkey: accounts.guild,
       isWritable: true,
       isSigner: false,
     },
     {
       pubkey: accounts.project,
-      isWritable: true,
+      isWritable: false,
       isSigner: false,
     },
     {
