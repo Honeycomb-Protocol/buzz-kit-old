@@ -42,9 +42,9 @@ export const acceptRequestStruct = new beet.BeetArgsStruct<
  *
  * @property [] guildKit
  * @property [_writable_] guild
- * @property [] project
  * @property [_writable_] request
- * @property [] memberAddressContainer
+ * @property [] chiefAddressContainer
+ * @property [_writable_] chiefAccount
  * @property [_writable_] memberAccount
  * @property [_writable_] member
  * @property [_writable_] membershipLock
@@ -58,9 +58,9 @@ export const acceptRequestStruct = new beet.BeetArgsStruct<
 export type AcceptRequestInstructionAccounts = {
   guildKit: web3.PublicKey
   guild: web3.PublicKey
-  project: web3.PublicKey
   request: web3.PublicKey
-  memberAddressContainer: web3.PublicKey
+  chiefAddressContainer: web3.PublicKey
+  chiefAccount: web3.PublicKey
   memberAccount: web3.PublicKey
   member: web3.PublicKey
   membershipLock: web3.PublicKey
@@ -107,18 +107,18 @@ export function createAcceptRequestInstruction(
       isSigner: false,
     },
     {
-      pubkey: accounts.project,
-      isWritable: false,
-      isSigner: false,
-    },
-    {
       pubkey: accounts.request,
       isWritable: true,
       isSigner: false,
     },
     {
-      pubkey: accounts.memberAddressContainer,
+      pubkey: accounts.chiefAddressContainer,
       isWritable: false,
+      isSigner: false,
+    },
+    {
+      pubkey: accounts.chiefAccount,
+      isWritable: true,
       isSigner: false,
     },
     {

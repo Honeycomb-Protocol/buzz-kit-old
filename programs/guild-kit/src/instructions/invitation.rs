@@ -1,23 +1,24 @@
-use crate::errors::ErrorCode;
 use {
+    // crate::assertion::assetion_project_of_address_container,
+    crate::errors::ErrorCode,
     crate::state::*,
     anchor_lang::prelude::*,
     anchor_spl::token::{self, Token, TokenAccount},
     hpl_hive_control::{
         assertions::assert_indexed_reference,
-        state::{AddressContainer, AddressContainerRole, IndexedReference, Project},
+        state::{AddressContainer, AddressContainerRole, IndexedReference},
     },
 };
 
 #[derive(Accounts)]
-#[instruction(args: CreateInvitationArgs)]
-pub struct CreateInvitation<'info> {
+#[instruction(args: SendInvitationArgs)]
+pub struct SendInvitation<'info> {
     /// Unique identifier for the guild
     /// CHECK: This is not dangerous because we don't read or write from this account
     pub invitation_id: AccountInfo<'info>,
 
     /// GUILD KIT
-    #[account(has_one = project)]
+    #[account()]
     pub guild_kit: Box<Account<'info, GuildKit>>,
 
     /// Guild state account
@@ -37,35 +38,27 @@ pub struct CreateInvitation<'info> {
     )]
     pub invitation: Box<Account<'info, Invitation>>,
 
-    /// HIVE CONTROL
-    #[account()]
-    pub project: Box<Account<'info, Project>>,
-
     /// Address container that stores the mint addresss of the collections
-    #[account(constraint = chief_address_container.role == AddressContainerRole::ProjectMints && chief_address_container.associated_with == project.key())]
+    #[account(constraint = chief_address_container.role == AddressContainerRole::ProjectMints && chief_address_container.associated_with == guild_kit.project.key())]
     pub chief_address_container: Account<'info, AddressContainer>,
 
-    /// the token account of the chief
-    #[account(constraint = chief_account.owner == authority.key() && chief_account.amount >= 0 as u64)]
-    pub chief_account: Account<'info, TokenAccount>,
-
-    /// the chief account that invited
+    /// the token account of the chief that is inviting the member
     /// CHECK: This is not dangerous because we don't read or write from this account
-    #[account(mut)]
-    pub chief: AccountInfo<'info>,
+    #[account(
+        constraint = invited_by.owner == authority.key() &&
+        invited_by.amount >= 0 as u64
+    )]
+    pub invited_by: Account<'info, TokenAccount>,
 
-    /// Address container that stores the mint addresss of the collections
-    #[account(constraint = member_address_container.role == AddressContainerRole::ProjectMints && member_address_container.associated_with == project.key())]
-    pub member_address_container: Account<'info, AddressContainer>,
-
-    /// Verify the owner of the mint
-    #[account(mut, constraint = member_account.amount > 0 as u64)]
-    pub member_account: Account<'info, TokenAccount>,
+    /// the token account of the member that is being invited
+    /// CHECK: This is not dangerous because we don't read or write from this account
+    pub inviting_mint: AccountInfo<'info>,
 
     /// the payer of the transaction
     #[account(mut)]
     pub payer: Signer<'info>,
 
+    /// the chief account that invited
     /// the payer of the transaction
     #[account(mut)]
     pub authority: Signer<'info>,
@@ -84,55 +77,41 @@ pub struct CreateInvitation<'info> {
     /// system program  
     pub system_program: Program<'info, System>,
 }
-
 #[derive(AnchorDeserialize, AnchorSerialize, Clone, Debug, PartialEq)]
-pub struct CreateInvitationArgs {
+pub struct SendInvitationArgs {
     pub chief_refrence: IndexedReference,
     pub new_member_refrence: IndexedReference,
 }
-pub fn create_invitation(ctx: Context<CreateInvitation>, args: CreateInvitationArgs) -> Result<()> {
+pub fn send_invitation(ctx: Context<SendInvitation>, args: SendInvitationArgs) -> Result<()> {
+    msg!("Creating invitation...");
     let invitation = &mut ctx.accounts.invitation;
     let guild = &mut ctx.accounts.guild;
-    let chief = &mut ctx.accounts.chief;
 
-    // CHIEF & MEMBER ACCOUNTS & ADDRESS CONTAINERS
-    let chief_account = &ctx.accounts.chief_account;
-    let member_account = &ctx.accounts.member_account;
+    // CHIEF &  ADDRESS CONTAINERS
     let chief_address_container = &ctx.accounts.chief_address_container;
-    let member_address_container = &ctx.accounts.member_address_container;
 
     guild
         .members
         .iter()
         .find(|member| member.reference == args.chief_refrence && member.role == MemberRole::Chief)
-        .ok_or(ErrorCode::ChiefNotFound)?;
+        .ok_or(ErrorCode::InvalidChief)?;
 
     // Check if chief reference is in the address container
     if !assert_indexed_reference(
         &args.chief_refrence,
         chief_address_container,
-        chief_account.mint,
+        ctx.accounts.invited_by.mint,
     )
     .unwrap()
     {
         return Err(ErrorCode::ChiefNotFound.into());
     }
 
-    // Check if member reference is in the address container
-    if !assert_indexed_reference(
-        &args.new_member_refrence,
-        member_address_container,
-        member_account.mint,
-    )
-    .unwrap()
-    {
-        return Err(ErrorCode::MemberNotFound.into());
-    }
-
     // CREATING INVITATION
+    invitation.invitation_id = ctx.accounts.invitation_id.key();
     invitation.guild = guild.key();
     invitation.bump = ctx.bumps["invitation"];
-    invitation.invited_by = chief.key();
+    invitation.invited_by = ctx.accounts.authority.key();
     invitation.invited = args.new_member_refrence;
 
     Ok(())
@@ -143,19 +122,15 @@ pub fn create_invitation(ctx: Context<CreateInvitation>, args: CreateInvitationA
 #[instruction(args: AcceptInvitationArgs)]
 pub struct AcceptInvitation<'info> {
     /// GUILD KIT
-    #[account(has_one = project)]
+    #[account()]
     pub guild_kit: Box<Account<'info, GuildKit>>,
 
     /// Guild state account
     #[account(mut, has_one = guild_kit)]
     pub guild: Box<Account<'info, Guild>>,
 
-    /// PROJECT
-    #[account()]
-    pub project: Box<Account<'info, Project>>,
-
     /// Address container that stores the mint addresss of the collections
-    #[account(mut, close = chief)]
+    #[account(mut, close = chief, constraint = invitation.invited_by == chief.key())]
     pub invitation: Box<Account<'info, Invitation>>,
 
     /// the chief account that invited
@@ -164,7 +139,10 @@ pub struct AcceptInvitation<'info> {
     pub chief: AccountInfo<'info>,
 
     /// Address container that stores the mint addresss of the collections
-    #[account(constraint = member_address_container.role == AddressContainerRole::ProjectMints && member_address_container.associated_with == project.key())]
+    #[account(
+    constraint = member_address_container.role == AddressContainerRole::ProjectMints && 
+                member_address_container.associated_with == guild_kit.project.key()
+    )]
     pub member_address_container: Account<'info, AddressContainer>,
 
     /// Verify the owner of the mint
@@ -207,7 +185,6 @@ pub struct AcceptInvitation<'info> {
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
 pub struct AcceptInvitationArgs {
-    pub chief_refrence: IndexedReference,
     pub new_member_refrence: IndexedReference,
 }
 

@@ -58,44 +58,87 @@ createErrorFromNameLookup.set(
 )
 
 /**
- * MemberNotFound: 'the member refrence can not be found in the guild'
+ * InvalidChief: 'the chief is not valid'
+ *
+ * @category Errors
+ * @category generated
+ */
+export class InvalidChiefError extends Error {
+  readonly code: number = 0x1772
+  readonly name: string = 'InvalidChief'
+  constructor() {
+    super('the chief is not valid')
+    if (typeof Error.captureStackTrace === 'function') {
+      Error.captureStackTrace(this, InvalidChiefError)
+    }
+  }
+}
+
+createErrorFromCodeLookup.set(0x1772, () => new InvalidChiefError())
+createErrorFromNameLookup.set('InvalidChief', () => new InvalidChiefError())
+
+/**
+ * MemberNotFound: 'the member refrence can not be found in the conntainers'
  *
  * @category Errors
  * @category generated
  */
 export class MemberNotFoundError extends Error {
-  readonly code: number = 0x1772
+  readonly code: number = 0x1773
   readonly name: string = 'MemberNotFound'
   constructor() {
-    super('the member refrence can not be found in the guild')
+    super('the member refrence can not be found in the conntainers')
     if (typeof Error.captureStackTrace === 'function') {
       Error.captureStackTrace(this, MemberNotFoundError)
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x1772, () => new MemberNotFoundError())
+createErrorFromCodeLookup.set(0x1773, () => new MemberNotFoundError())
 createErrorFromNameLookup.set('MemberNotFound', () => new MemberNotFoundError())
 
 /**
- * ChiefNotFound: 'the chief refrence can not be found in the guild'
+ * ChiefNotFound: 'the chief refrence can not be found in the conntainers'
  *
  * @category Errors
  * @category generated
  */
 export class ChiefNotFoundError extends Error {
-  readonly code: number = 0x1773
+  readonly code: number = 0x1774
   readonly name: string = 'ChiefNotFound'
   constructor() {
-    super('the chief refrence can not be found in the guild')
+    super('the chief refrence can not be found in the conntainers')
     if (typeof Error.captureStackTrace === 'function') {
       Error.captureStackTrace(this, ChiefNotFoundError)
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x1773, () => new ChiefNotFoundError())
+createErrorFromCodeLookup.set(0x1774, () => new ChiefNotFoundError())
 createErrorFromNameLookup.set('ChiefNotFound', () => new ChiefNotFoundError())
+
+/**
+ * InvalidAddressContainer: 'the address container is not valid'
+ *
+ * @category Errors
+ * @category generated
+ */
+export class InvalidAddressContainerError extends Error {
+  readonly code: number = 0x1775
+  readonly name: string = 'InvalidAddressContainer'
+  constructor() {
+    super('the address container is not valid')
+    if (typeof Error.captureStackTrace === 'function') {
+      Error.captureStackTrace(this, InvalidAddressContainerError)
+    }
+  }
+}
+
+createErrorFromCodeLookup.set(0x1775, () => new InvalidAddressContainerError())
+createErrorFromNameLookup.set(
+  'InvalidAddressContainer',
+  () => new InvalidAddressContainerError()
+)
 
 /**
  * Attempts to resolve a custom program error from the provided error code.

@@ -9,7 +9,6 @@ type CreateCreateRequestCtx = {
     project: web3.PublicKey,
     guild: web3.PublicKey,
     guild_kit: web3.PublicKey,
-    member: web3.PublicKey,
     memberNftMint: web3.PublicKey,
     payer: web3.PublicKey,
     authority: web3.PublicKey,
@@ -34,10 +33,9 @@ export function createRequestCtx(args: CreateCreateRequestCtx): OperationCtx & {
             guild: args.guild,
             guildKit: args.guild_kit,
             request,
-            project: args.project,
             memberAddressContainer,
             memberAccount,
-            member: args.member,
+            member: args.authority,
             payer: args.payer,
             authority: args.authority,
             rent: web3.SYSVAR_RENT_PUBKEY,
@@ -56,7 +54,6 @@ export function createRequestCtx(args: CreateCreateRequestCtx): OperationCtx & {
 export type createRequestArgs = {
     args: CreateRequestArgsChain,
     guild: web3.PublicKey,
-    member: web3.PublicKey,
     memberNftMint: web3.PublicKey,
     programId?: web3.PublicKey,
 }

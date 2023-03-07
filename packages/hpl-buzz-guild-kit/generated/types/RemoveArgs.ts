@@ -8,6 +8,7 @@
 import * as beet from '@metaplex-foundation/beet'
 import { IndexedReference, indexedReferenceBeet } from './IndexedReference'
 export type RemoveArgs = {
+  chiefMemberRefrence: IndexedReference
   newMemberRefrence: IndexedReference
 }
 
@@ -16,6 +17,9 @@ export type RemoveArgs = {
  * @category generated
  */
 export const removeArgsBeet = new beet.BeetArgsStruct<RemoveArgs>(
-  [['newMemberRefrence', indexedReferenceBeet]],
+  [
+    ['chiefMemberRefrence', indexedReferenceBeet],
+    ['newMemberRefrence', indexedReferenceBeet],
+  ],
   'RemoveArgs'
 )

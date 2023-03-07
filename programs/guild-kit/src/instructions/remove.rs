@@ -25,12 +25,14 @@ pub struct Remove<'info> {
     pub project: Box<Account<'info, Project>>,
 
     /// Address container that stores the mint addresss of the collections
-    #[account(constraint = member_address_container.role == AddressContainerRole::ProjectMints && member_address_container.associated_with == project.key())]
-    pub member_address_container: Account<'info, AddressContainer>,
+    #[account(constraint = 
+        chief_address_container.role == AddressContainerRole::ProjectMints 
+        && chief_address_container.associated_with == project.key())]
+    pub chief_address_container: Account<'info, AddressContainer>,
 
     /// Verify the owner of the mint
-    #[account(mut, constraint= member_account.amount > 0 as u64)]
-    pub member_account: Account<'info, TokenAccount>,
+    #[account(mut, constraint= chief_account.amount > 0 as u64)]
+    pub chief_account: Account<'info, TokenAccount>,
 
     /// the chief account that invited
     /// CHECK: This is not dangerous because we don't read or write from this account
@@ -55,6 +57,10 @@ pub struct Remove<'info> {
     /// RENT SYSVAR
     pub rent: Sysvar<'info, Rent>,
 
+    /// CHECK: This is not dangerous because we don't read or write from this account
+    #[account(mut)]
+    pub vault: AccountInfo<'info>,
+
     /// TOKEN PROGRAM
     #[account(address = token::ID)]
     pub token_program: Program<'info, Token>,
@@ -65,24 +71,25 @@ pub struct Remove<'info> {
 
 #[derive(AnchorDeserialize, AnchorSerialize, Clone, Debug, PartialEq)]
 pub struct RemoveArgs {
+    pub chief_member_refrence: IndexedReference,
     pub new_member_refrence: IndexedReference,
 }
 pub fn remove_member(ctx: Context<Remove>, args: RemoveArgs) -> Result<()> {
     let guild = &mut ctx.accounts.guild;
 
     // CHIEF & MEMBER ACCOUNTS & ADDRESS CONTAINERS
-    let member_account = &ctx.accounts.member_account;
-    let member_address_container = &ctx.accounts.member_address_container;
+    let chief_account = &ctx.accounts.chief_account;
+    let chief_address_container = &ctx.accounts.chief_address_container;
 
     // Check if member reference is in the address container
     if !assert_indexed_reference(
-        &args.new_member_refrence,
-        member_address_container,
-        member_account.mint,
+        &args.chief_member_refrence,
+        chief_address_container,
+        chief_account.mint,
     )
     .unwrap()
     {
-        return Err(ErrorCode::MemberNotFound.into());
+        return Err(ErrorCode::InvalidChief.into());
     }
 
     // GET MEMBER INDEX IN GUILD

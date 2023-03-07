@@ -1,3 +1,4 @@
+pub mod assertion;
 pub mod errors;
 pub mod instructions;
 pub mod state;
@@ -72,11 +73,8 @@ pub mod hpl_buzz_guild_kit {
     }
 
     // INVITATIONS
-    pub fn create_invitation(
-        ctx: Context<CreateInvitation>,
-        args: CreateInvitationArgs,
-    ) -> Result<()> {
-        instructions::create_invitation(ctx, args)
+    pub fn send_invitation(ctx: Context<SendInvitation>, args: SendInvitationArgs) -> Result<()> {
+        instructions::send_invitation(ctx, args)
     }
 
     pub fn accept_invitation(

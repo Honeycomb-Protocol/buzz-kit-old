@@ -5,7 +5,7 @@ use {
     anchor_spl::token::{self, Token, TokenAccount},
     hpl_hive_control::{
         assertions::assert_indexed_reference,
-        state::{AddressContainer, AddressContainerRole, IndexedReference, Project},
+        state::{AddressContainer, AddressContainerRole, IndexedReference},
     },
 };
 
@@ -30,26 +30,25 @@ pub struct CreateRequest<'info> {
     pub request: Box<Account<'info, Request>>,
 
     /// GUILD KIT
-    #[account(has_one = project)]
+    #[account()]
     pub guild_kit: Box<Account<'info, GuildKit>>,
 
     /// Guild state account
     #[account(mut, has_one = guild_kit)]
     pub guild: Box<Account<'info, Guild>>,
 
-    /// PROJECT
-    #[account()]
-    pub project: Box<Account<'info, Project>>,
-
     /// Address container that stores the mint addresss of the collections
-    #[account(constraint = member_address_container.role == AddressContainerRole::ProjectMints && member_address_container.associated_with == project.key())]
+    #[account(
+        constraint = member_address_container.role == AddressContainerRole::ProjectMints 
+        && member_address_container.associated_with == guild_kit.project.key()
+    )]
     pub member_address_container: Account<'info, AddressContainer>,
 
     /// Verify the owner of the mint
     #[account(mut, constraint= member_account.amount > 0 as u64)]
     pub member_account: Account<'info, TokenAccount>,
 
-    /// the chief of the guild
+    /// the member account info of the member that is requesting
     /// CHECK: This is not dangerous because we don't read or write from this account
     #[account(mut)]
     pub member: AccountInfo<'info>,
@@ -84,6 +83,7 @@ pub struct CreateRequestArgs {
 pub fn create_request(ctx: Context<CreateRequest>, args: CreateRequestArgs) -> Result<()> {
     let request = &mut ctx.accounts.request;
     let guild = &mut ctx.accounts.guild;
+
     let member = &ctx.accounts.member;
     let member_account = &ctx.accounts.member_account;
     let member_address_container = &ctx.accounts.member_address_container;
@@ -100,6 +100,7 @@ pub fn create_request(ctx: Context<CreateRequest>, args: CreateRequestArgs) -> R
     }
 
     // CREATING INVITATION
+    request.request_id = ctx.accounts.request_id.key();
     request.guild = guild.key();
     request.bump = ctx.bumps["request"];
     request.requested_by = member.key();
@@ -112,28 +113,31 @@ pub fn create_request(ctx: Context<CreateRequest>, args: CreateRequestArgs) -> R
 #[instruction(args: AcceptRequestArgs)]
 pub struct AcceptRequest<'info> {
     /// GUILD KIT
-    #[account(has_one = project)]
+    #[account()]
     pub guild_kit: Box<Account<'info, GuildKit>>,
 
     /// Guild state account
     #[account(mut, has_one = guild_kit)]
     pub guild: Box<Account<'info, Guild>>,
 
-    /// PROJECT
-    #[account()]
-    pub project: Box<Account<'info, Project>>,
-
     /// Address container that stores the mint addresss of the collections
-    #[account(mut, close = member)]
+    #[account(mut, close = member, constraint = request.requested_by == member.key())]
     pub request: Box<Account<'info, Request>>,
 
     /// Address container that stores the mint addresss of the collections
-    #[account(constraint = member_address_container.role == AddressContainerRole::ProjectMints && member_address_container.associated_with == project.key())]
-    pub member_address_container: Account<'info, AddressContainer>,
+    #[account(constraint = 
+        chief_address_container.role == AddressContainerRole::ProjectMints
+         && chief_address_container.associated_with == guild_kit.project.key()
+    )]
+    pub chief_address_container: Box<Account<'info, AddressContainer>>,
+
+    /// Verify the owner of the mint
+    #[account(mut, constraint= chief_account.amount > 0 as u64)]
+    pub chief_account: Box<Account<'info, TokenAccount>>,
 
     /// Verify the owner of the mint
     #[account(mut, constraint= member_account.amount > 0 as u64)]
-    pub member_account: Account<'info, TokenAccount>,
+    pub member_account: Box<Account<'info, TokenAccount>>,
 
     /// the member that requested
     /// CHECK: This is not dangerous because we don't read or write from this account
@@ -152,7 +156,7 @@ pub struct AcceptRequest<'info> {
           payer = payer,
           space = MembershipLock::LEN
       )]
-    pub membership_lock: Account<'info, MembershipLock>,
+    pub membership_lock: Box<Account<'info, MembershipLock>>,
 
     /// SPL TOKEN PROGRAM
     #[account(address = token::ID)]
@@ -184,14 +188,14 @@ pub struct AcceptRequestArgs {
 pub fn accept_request(ctx: Context<AcceptRequest>, args: AcceptRequestArgs) -> Result<()> {
     let guild = &mut ctx.accounts.guild;
     let member_lock = &mut ctx.accounts.membership_lock;
-    let member_account = &ctx.accounts.member_account;
-    let member_address_container = &ctx.accounts.member_address_container;
+    let chief_account = &ctx.accounts.chief_account;
+    let chief_address_container = &ctx.accounts.chief_address_container;
 
     // Check if member reference is in the address container
     if !assert_indexed_reference(
-        &args.new_member_refrence,
-        member_address_container,
-        member_account.mint,
+        &args.chief_refrence,
+        chief_address_container,
+        chief_account.mint,
     )
     .unwrap()
     {

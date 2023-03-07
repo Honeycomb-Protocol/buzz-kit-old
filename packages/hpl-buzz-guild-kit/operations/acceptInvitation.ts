@@ -1,5 +1,5 @@
 import * as web3 from "@solana/web3.js"
-import { getInvitationPda, getMembershipLockPda } from "../pdas";
+import { getMembershipLockPda } from "../pdas";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { createAcceptInvitationInstruction, AcceptInvitationArgs as AcceptInvitationArgsChain, PROGRAM_ID } from "../generated";
 import { AddressContainerRole, createCtx, getAddressContainerPda, Honeycomb, OperationCtx, VAULT } from "@honeycomb-protocol/hive-control";
@@ -20,7 +20,6 @@ type CreateAcceptInvitationCtx = {
 export function createAcceptInvitationCtx(args: CreateAcceptInvitationCtx): OperationCtx {
 
     const programId = args.programId || PROGRAM_ID;
-    const [invitation] = getInvitationPda(programId, args.guild, args.invitation);
     const [membershipLock] = getMembershipLockPda(programId, args.guild, args.memberNftMint);
     const [memberAddressContainer] = getAddressContainerPda(AddressContainerRole.ProjectMints, args.project, args.args.newMemberRefrence.addressContainerIndex);
     const memberAccount = getAssociatedTokenAddressSync(
@@ -32,10 +31,9 @@ export function createAcceptInvitationCtx(args: CreateAcceptInvitationCtx): Oper
 
     const instructions: web3.TransactionInstruction[] = [
         createAcceptInvitationInstruction({
-            project: args.project,
             guild: args.guild,
             guildKit: args.guild_kit,
-            invitation,
+            invitation: args.invitation,
             memberAddressContainer,
             memberAccount,
             membershipLock,
@@ -58,7 +56,6 @@ export type acceptInvitationArgs = {
     guild: web3.PublicKey,
     invitation: web3.PublicKey,
     memberNftMint: web3.PublicKey,
-    member: web3.PublicKey,
     chief: web3.PublicKey,
     programId?: web3.PublicKey,
 }
@@ -69,6 +66,7 @@ export async function acceptInvitation(honeycomb: Honeycomb, args: acceptInvitat
         payer: honeycomb.identity().publicKey,
         authority: honeycomb.identity().publicKey,
         guild_kit: honeycomb.guildKit().guildKitAddress,
+        member: honeycomb.identity().publicKey,
     });
 
     return {

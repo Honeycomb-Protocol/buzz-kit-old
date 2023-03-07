@@ -12,7 +12,6 @@ type CreateJoinGuildCtx = {
     member: web3.PublicKey,
     memberNftMint: web3.PublicKey,
     payer: web3.PublicKey,
-    authority: web3.PublicKey,
     programId?: web3.PublicKey,
 }
 export function joinGuildCtx(args: CreateJoinGuildCtx): OperationCtx {
@@ -35,7 +34,6 @@ export function joinGuildCtx(args: CreateJoinGuildCtx): OperationCtx {
             memberAddressContainer,
             memberAccount,
             payer: args.payer,
-            authority: args.authority,
             membershipLock,
             vault: VAULT,
         }, {
@@ -50,18 +48,17 @@ export function joinGuildCtx(args: CreateJoinGuildCtx): OperationCtx {
 
 export type joinGuildArgs = {
     args: JoinGuildArgsChain
-    guild: web3.PublicKey,
-    member: web3.PublicKey,
     memberNftMint: web3.PublicKey,
+    guild: web3.PublicKey,
     programId?: web3.PublicKey,
 }
 export async function joinGuild(honeycomb: Honeycomb, args: joinGuildArgs) {
     const ctx = joinGuildCtx({
         ...args,
         project: honeycomb.project().projectAddress,
-        payer: honeycomb.identity().publicKey,
-        authority: honeycomb.identity().publicKey,
         guild_kit: honeycomb.guildKit().guildKitAddress,
+        member: honeycomb.identity().publicKey,
+        payer: honeycomb.identity().publicKey,
     });
 
     return {

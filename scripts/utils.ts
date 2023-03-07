@@ -1,5 +1,6 @@
 import fs from 'fs';
 import key from '../key.json';
+import member from '../member.json';
 import { Config } from './types';
 import { Connection, Keypair } from '@solana/web3.js';
 import { PROGRAM_ADDRESS } from './../packages/hpl-buzz-guild-kit/generated/index';
@@ -77,11 +78,16 @@ export const getDependencies = (
 ) => {
   const config = network === "mainnet" ? mainnetConfig : devnetConfig;
   const keypair = Keypair.fromSecretKey(Uint8Array.from(key));
+  const member_keypair = Keypair.fromSecretKey(Uint8Array.from(member));
 
   const connection = new Connection(config.endpoint);
 
   const honeycomb = new Honeycomb(connection);
-  honeycomb.use(identityModule(keypair));
+
+  const chiefIdenityModule = identityModule(keypair);
+  const memberIdenityModule = identityModule(member_keypair);
+
+  honeycomb.use(chiefIdenityModule);
 
   const setDeploymentsLocal = (deployments) =>
     setDeployments(programName, network, deployments);
@@ -100,7 +106,8 @@ export const getDependencies = (
     config,
     connection,
     deployments,
-    signer: keypair,
+    chiefIdenityModule,
+    memberIdenityModule,
     honeycomb,
     setDeployments: setDeploymentsLocal,
   };

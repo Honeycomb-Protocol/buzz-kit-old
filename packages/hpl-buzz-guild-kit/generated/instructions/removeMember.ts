@@ -40,12 +40,13 @@ export const removeMemberStruct = new beet.BeetArgsStruct<
  * @property [] guildKit
  * @property [_writable_] guild
  * @property [] project
- * @property [] memberAddressContainer
- * @property [_writable_] memberAccount
+ * @property [] chiefAddressContainer
+ * @property [_writable_] chiefAccount
  * @property [_writable_] member
  * @property [_writable_] membershipLock
  * @property [_writable_, **signer**] payer
  * @property [_writable_, **signer**] authority
+ * @property [_writable_] vault
  * @category Instructions
  * @category RemoveMember
  * @category generated
@@ -54,13 +55,14 @@ export type RemoveMemberInstructionAccounts = {
   guildKit: web3.PublicKey
   guild: web3.PublicKey
   project: web3.PublicKey
-  memberAddressContainer: web3.PublicKey
-  memberAccount: web3.PublicKey
+  chiefAddressContainer: web3.PublicKey
+  chiefAccount: web3.PublicKey
   member: web3.PublicKey
   membershipLock: web3.PublicKey
   payer: web3.PublicKey
   authority: web3.PublicKey
   rent?: web3.PublicKey
+  vault: web3.PublicKey
   tokenProgram?: web3.PublicKey
   systemProgram?: web3.PublicKey
   anchorRemainingAccounts?: web3.AccountMeta[]
@@ -106,12 +108,12 @@ export function createRemoveMemberInstruction(
       isSigner: false,
     },
     {
-      pubkey: accounts.memberAddressContainer,
+      pubkey: accounts.chiefAddressContainer,
       isWritable: false,
       isSigner: false,
     },
     {
-      pubkey: accounts.memberAccount,
+      pubkey: accounts.chiefAccount,
       isWritable: true,
       isSigner: false,
     },
@@ -138,6 +140,11 @@ export function createRemoveMemberInstruction(
     {
       pubkey: accounts.rent ?? web3.SYSVAR_RENT_PUBKEY,
       isWritable: false,
+      isSigner: false,
+    },
+    {
+      pubkey: accounts.vault,
+      isWritable: true,
       isSigner: false,
     },
     {

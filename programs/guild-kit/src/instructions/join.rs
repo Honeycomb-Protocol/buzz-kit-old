@@ -55,10 +55,6 @@ pub struct JoinGuild<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
-    /// The wallet that pays for the rent
-    #[account(mut)]
-    pub authority: Signer<'info>,
-
     /// CHECK: This is not dangerous because we don't read or write from this account
     #[account(mut)]
     pub vault: AccountInfo<'info>,

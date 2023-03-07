@@ -9,65 +9,59 @@ import * as splToken from '@solana/spl-token'
 import * as beet from '@metaplex-foundation/beet'
 import * as web3 from '@solana/web3.js'
 import {
-  CreateInvitationArgs,
-  createInvitationArgsBeet,
-} from '../types/CreateInvitationArgs'
+  SendInvitationArgs,
+  sendInvitationArgsBeet,
+} from '../types/SendInvitationArgs'
 
 /**
  * @category Instructions
- * @category CreateInvitation
+ * @category SendInvitation
  * @category generated
  */
-export type CreateInvitationInstructionArgs = {
-  args: CreateInvitationArgs
+export type SendInvitationInstructionArgs = {
+  args: SendInvitationArgs
 }
 /**
  * @category Instructions
- * @category CreateInvitation
+ * @category SendInvitation
  * @category generated
  */
-export const createInvitationStruct = new beet.BeetArgsStruct<
-  CreateInvitationInstructionArgs & {
+export const sendInvitationStruct = new beet.BeetArgsStruct<
+  SendInvitationInstructionArgs & {
     instructionDiscriminator: number[] /* size: 8 */
   }
 >(
   [
     ['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['args', createInvitationArgsBeet],
+    ['args', sendInvitationArgsBeet],
   ],
-  'CreateInvitationInstructionArgs'
+  'SendInvitationInstructionArgs'
 )
 /**
- * Accounts required by the _createInvitation_ instruction
+ * Accounts required by the _sendInvitation_ instruction
  *
  * @property [] invitationId
  * @property [] guildKit
  * @property [_writable_] guild
  * @property [_writable_] invitation
- * @property [] project
  * @property [] chiefAddressContainer
- * @property [] chiefAccount
- * @property [_writable_] chief
- * @property [] memberAddressContainer
- * @property [_writable_] memberAccount
+ * @property [] invitedBy
+ * @property [] invitingMint
  * @property [_writable_, **signer**] payer
  * @property [_writable_, **signer**] authority
  * @property [_writable_] vault
  * @category Instructions
- * @category CreateInvitation
+ * @category SendInvitation
  * @category generated
  */
-export type CreateInvitationInstructionAccounts = {
+export type SendInvitationInstructionAccounts = {
   invitationId: web3.PublicKey
   guildKit: web3.PublicKey
   guild: web3.PublicKey
   invitation: web3.PublicKey
-  project: web3.PublicKey
   chiefAddressContainer: web3.PublicKey
-  chiefAccount: web3.PublicKey
-  chief: web3.PublicKey
-  memberAddressContainer: web3.PublicKey
-  memberAccount: web3.PublicKey
+  invitedBy: web3.PublicKey
+  invitingMint: web3.PublicKey
   payer: web3.PublicKey
   authority: web3.PublicKey
   vault: web3.PublicKey
@@ -77,27 +71,27 @@ export type CreateInvitationInstructionAccounts = {
   anchorRemainingAccounts?: web3.AccountMeta[]
 }
 
-export const createInvitationInstructionDiscriminator = [
-  52, 19, 21, 13, 54, 156, 27, 172,
+export const sendInvitationInstructionDiscriminator = [
+  244, 206, 197, 215, 107, 35, 0, 186,
 ]
 
 /**
- * Creates a _CreateInvitation_ instruction.
+ * Creates a _SendInvitation_ instruction.
  *
  * @param accounts that will be accessed while the instruction is processed
  * @param args to provide as instruction data to the program
  *
  * @category Instructions
- * @category CreateInvitation
+ * @category SendInvitation
  * @category generated
  */
-export function createCreateInvitationInstruction(
-  accounts: CreateInvitationInstructionAccounts,
-  args: CreateInvitationInstructionArgs,
+export function createSendInvitationInstruction(
+  accounts: SendInvitationInstructionAccounts,
+  args: SendInvitationInstructionArgs,
   programId = new web3.PublicKey('38foo9CSfPiPZTBvNhouNaYpvkzKEzWW396PUW2GKPVA')
 ) {
-  const [data] = createInvitationStruct.serialize({
-    instructionDiscriminator: createInvitationInstructionDiscriminator,
+  const [data] = sendInvitationStruct.serialize({
+    instructionDiscriminator: sendInvitationInstructionDiscriminator,
     ...args,
   })
   const keys: web3.AccountMeta[] = [
@@ -122,33 +116,18 @@ export function createCreateInvitationInstruction(
       isSigner: false,
     },
     {
-      pubkey: accounts.project,
-      isWritable: false,
-      isSigner: false,
-    },
-    {
       pubkey: accounts.chiefAddressContainer,
       isWritable: false,
       isSigner: false,
     },
     {
-      pubkey: accounts.chiefAccount,
+      pubkey: accounts.invitedBy,
       isWritable: false,
       isSigner: false,
     },
     {
-      pubkey: accounts.chief,
-      isWritable: true,
-      isSigner: false,
-    },
-    {
-      pubkey: accounts.memberAddressContainer,
+      pubkey: accounts.invitingMint,
       isWritable: false,
-      isSigner: false,
-    },
-    {
-      pubkey: accounts.memberAccount,
-      isWritable: true,
       isSigner: false,
     },
     {

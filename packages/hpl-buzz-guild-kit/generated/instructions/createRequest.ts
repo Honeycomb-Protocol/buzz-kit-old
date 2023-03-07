@@ -44,7 +44,6 @@ export const createRequestStruct = new beet.BeetArgsStruct<
  * @property [_writable_] request
  * @property [] guildKit
  * @property [_writable_] guild
- * @property [] project
  * @property [] memberAddressContainer
  * @property [_writable_] memberAccount
  * @property [_writable_] member
@@ -60,7 +59,6 @@ export type CreateRequestInstructionAccounts = {
   request: web3.PublicKey
   guildKit: web3.PublicKey
   guild: web3.PublicKey
-  project: web3.PublicKey
   memberAddressContainer: web3.PublicKey
   memberAccount: web3.PublicKey
   member: web3.PublicKey
@@ -115,11 +113,6 @@ export function createCreateRequestInstruction(
     {
       pubkey: accounts.guild,
       isWritable: true,
-      isSigner: false,
-    },
-    {
-      pubkey: accounts.project,
-      isWritable: false,
       isSigner: false,
     },
     {

@@ -14,8 +14,8 @@ import {
     acceptInvitationArgs,
     acceptRequest,
     acceptRequestArgs,
-    createInvitation,
-    createInvitationArgs,
+    sendInvitation,
+    sendInvitationArgs,
     createRequest,
     createRequestArgs,
     joinGuild,
@@ -25,6 +25,7 @@ import {
     updateMemberRole,
     updateMemberRoleCtx,
 } from "./operations";
+import { removeMember, removeMemberArgs } from "./operations/removeMember";
 
 export class BuzzGuild {
     public readonly guildId: PublicKey
@@ -65,8 +66,8 @@ export class BuzzGuild {
         })
     }
 
-    public createInvitation(args: createInvitationArgs) {
-        return createInvitation(this._guildKit.honeycomb(), {
+    public createInvitation(args: sendInvitationArgs) {
+        return sendInvitation(this._guildKit.honeycomb(), {
             ...args,
             programId: this._guildKit.programId,
         });
@@ -100,6 +101,14 @@ export class BuzzGuild {
         });
     }
 
+    public removeMemberFromGuild(args: removeMemberArgs) {
+        return removeMember(this._guildKit.honeycomb(), {
+            ...args,
+            programId: this._guildKit.programId,
+        });
+    }
+
+
 }
 
 export class BuzzGuildFetch {
@@ -128,6 +137,7 @@ export class BuzzGuildFetch {
             .addFilter("guild", this._guild.guildAddress)
             .run(this._guildKit.honeycomb().connection)
     }
+
 
 
 }

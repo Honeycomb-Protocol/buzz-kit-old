@@ -1,7 +1,7 @@
 [package]
 name = "hpl-buzz-guild-kit"
 description = "Honeycomb protocol library guild kit program"
-author = ["Sultan Nadeem <sultanndilaram@gmail.com>"]
+author = ["Shayan Hussain <shayanhussain48@gmail.com>"]
 version = "0.0.1"
 edition = "2021"
 license = "MIT"

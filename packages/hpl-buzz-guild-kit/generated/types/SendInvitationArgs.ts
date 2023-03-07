@@ -7,7 +7,7 @@
 
 import * as beet from '@metaplex-foundation/beet'
 import { IndexedReference, indexedReferenceBeet } from './IndexedReference'
-export type CreateInvitationArgs = {
+export type SendInvitationArgs = {
   chiefRefrence: IndexedReference
   newMemberRefrence: IndexedReference
 }
@@ -16,11 +16,11 @@ export type CreateInvitationArgs = {
  * @category userTypes
  * @category generated
  */
-export const createInvitationArgsBeet =
-  new beet.BeetArgsStruct<CreateInvitationArgs>(
+export const sendInvitationArgsBeet =
+  new beet.BeetArgsStruct<SendInvitationArgs>(
     [
       ['chiefRefrence', indexedReferenceBeet],
       ['newMemberRefrence', indexedReferenceBeet],
     ],
-    'CreateInvitationArgs'
+    'SendInvitationArgs'
   )

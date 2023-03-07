@@ -42,7 +42,6 @@ export const acceptInvitationStruct = new beet.BeetArgsStruct<
  *
  * @property [] guildKit
  * @property [_writable_] guild
- * @property [] project
  * @property [_writable_] invitation
  * @property [_writable_] chief
  * @property [] memberAddressContainer
@@ -58,7 +57,6 @@ export const acceptInvitationStruct = new beet.BeetArgsStruct<
 export type AcceptInvitationInstructionAccounts = {
   guildKit: web3.PublicKey
   guild: web3.PublicKey
-  project: web3.PublicKey
   invitation: web3.PublicKey
   chief: web3.PublicKey
   memberAddressContainer: web3.PublicKey
@@ -104,11 +102,6 @@ export function createAcceptInvitationInstruction(
     {
       pubkey: accounts.guild,
       isWritable: true,
-      isSigner: false,
-    },
-    {
-      pubkey: accounts.project,
-      isWritable: false,
       isSigner: false,
     },
     {

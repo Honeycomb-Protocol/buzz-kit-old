@@ -44,7 +44,6 @@ export const joinGuildStruct = new beet.BeetArgsStruct<
  * @property [_writable_] memberAccount
  * @property [_writable_] membershipLock
  * @property [_writable_, **signer**] payer
- * @property [_writable_, **signer**] authority
  * @property [_writable_] vault
  * @category Instructions
  * @category JoinGuild
@@ -59,7 +58,6 @@ export type JoinGuildInstructionAccounts = {
   membershipLock: web3.PublicKey
   tokenProgram?: web3.PublicKey
   payer: web3.PublicKey
-  authority: web3.PublicKey
   vault: web3.PublicKey
   systemProgram?: web3.PublicKey
   anchorRemainingAccounts?: web3.AccountMeta[]
@@ -126,11 +124,6 @@ export function createJoinGuildInstruction(
     },
     {
       pubkey: accounts.payer,
-      isWritable: true,
-      isSigner: true,
-    },
-    {
-      pubkey: accounts.authority,
       isWritable: true,
       isSigner: true,
     },

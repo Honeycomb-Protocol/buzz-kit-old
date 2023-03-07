@@ -8,9 +8,15 @@ pub enum ErrorCode {
     #[msg("the member refrence is not valid")]
     MemberRefrenceVerificationFailed,
 
-    #[msg("the member refrence can not be found in the guild")]
+    #[msg("the chief is not valid")]
+    InvalidChief,
+
+    #[msg("the member refrence can not be found in the conntainers")]
     MemberNotFound,
 
-    #[msg("the chief refrence can not be found in the guild")]
+    #[msg("the chief refrence can not be found in the conntainers")]
     ChiefNotFound,
+
+    #[msg("the address container is not valid")]
+    InvalidAddressContainer,
 }
