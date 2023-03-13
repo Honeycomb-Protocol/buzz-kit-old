@@ -11,3 +11,4 @@ package-lock.json
 key.json
 member.json
 dist
+yarn-error.log
