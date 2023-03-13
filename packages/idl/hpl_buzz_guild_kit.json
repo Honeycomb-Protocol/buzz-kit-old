@@ -89,7 +89,14 @@
           ]
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": "CreateGuildKitArgs"
+          }
+        }
+      ]
     },
     {
       "name": "createGuild",
@@ -513,7 +520,7 @@
           ]
         },
         {
-          "name": "chief",
+          "name": "invitedBy",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -1052,6 +1059,13 @@
             "type": "publicKey"
           },
           {
+            "name": "matrixId",
+            "docs": [
+              "the matrix identifier for the guild"
+            ],
+            "type": "string"
+          },
+          {
             "name": "name",
             "docs": [
               "the name of the guild"
@@ -1202,6 +1216,13 @@
             "type": "publicKey"
           },
           {
+            "name": "matrixId",
+            "docs": [
+              "the matrix identifier for the guild_kit"
+            ],
+            "type": "string"
+          },
+          {
             "name": "project",
             "docs": [
               "the key to identify which project does it belong to"
@@ -1221,12 +1242,28 @@
   ],
   "types": [
     {
+      "name": "CreateGuildKitArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "matrixId",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
       "name": "CreateGuildArgs",
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "matrixId",
             "type": "string"
           },
           {
@@ -1494,6 +1531,28 @@
           }
         ]
       }
+    }
+  ],
+  "events": [
+    {
+      "name": "CreateGuildKitEvent",
+      "fields": [
+        {
+          "name": "kitKey",
+          "type": "publicKey",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "CreateGuildEvent",
+      "fields": [
+        {
+          "name": "guild",
+          "type": "publicKey",
+          "index": false
+        }
+      ]
     }
   ],
   "errors": [

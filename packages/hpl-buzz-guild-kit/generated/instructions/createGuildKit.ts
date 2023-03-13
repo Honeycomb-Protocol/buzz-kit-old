@@ -8,16 +8,33 @@
 import * as splToken from '@solana/spl-token'
 import * as beet from '@metaplex-foundation/beet'
 import * as web3 from '@solana/web3.js'
+import {
+  CreateGuildKitArgs,
+  createGuildKitArgsBeet,
+} from '../types/CreateGuildKitArgs'
 
 /**
  * @category Instructions
  * @category CreateGuildKit
  * @category generated
  */
-export const createGuildKitStruct = new beet.BeetArgsStruct<{
-  instructionDiscriminator: number[] /* size: 8 */
-}>(
-  [['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)]],
+export type CreateGuildKitInstructionArgs = {
+  args: CreateGuildKitArgs
+}
+/**
+ * @category Instructions
+ * @category CreateGuildKit
+ * @category generated
+ */
+export const createGuildKitStruct = new beet.FixableBeetArgsStruct<
+  CreateGuildKitInstructionArgs & {
+    instructionDiscriminator: number[] /* size: 8 */
+  }
+>(
+  [
+    ['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
+    ['args', createGuildKitArgsBeet],
+  ],
   'CreateGuildKitInstructionArgs'
 )
 /**
@@ -64,16 +81,20 @@ export const createGuildKitInstructionDiscriminator = [
  * Otherwise an Error is raised.
  *
  * @param accounts that will be accessed while the instruction is processed
+ * @param args to provide as instruction data to the program
+ *
  * @category Instructions
  * @category CreateGuildKit
  * @category generated
  */
 export function createCreateGuildKitInstruction(
   accounts: CreateGuildKitInstructionAccounts,
+  args: CreateGuildKitInstructionArgs,
   programId = new web3.PublicKey('38foo9CSfPiPZTBvNhouNaYpvkzKEzWW396PUW2GKPVA')
 ) {
   const [data] = createGuildKitStruct.serialize({
     instructionDiscriminator: createGuildKitInstructionDiscriminator,
+    ...args,
   })
   const keys: web3.AccountMeta[] = [
     {

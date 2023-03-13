@@ -11,6 +11,7 @@ import { GuildVisibility, guildVisibilityBeet } from './GuildVisibility'
 import { JoiningCriteria, joiningCriteriaBeet } from './JoiningCriteria'
 export type CreateGuildArgs = {
   name: string
+  matrixId: string
   chiefRefrence: IndexedReference
   visibility: GuildVisibility
   joiningCriteria: JoiningCriteria
@@ -24,6 +25,7 @@ export const createGuildArgsBeet =
   new beet.FixableBeetArgsStruct<CreateGuildArgs>(
     [
       ['name', beet.utf8String],
+      ['matrixId', beet.utf8String],
       ['chiefRefrence', indexedReferenceBeet],
       ['visibility', guildVisibilityBeet],
       ['joiningCriteria', joiningCriteriaBeet],

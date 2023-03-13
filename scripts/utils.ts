@@ -4,7 +4,9 @@ import member from '../member.json';
 import { Config } from './types';
 import { Connection, Keypair } from '@solana/web3.js';
 import { PROGRAM_ADDRESS } from './../packages/hpl-buzz-guild-kit/generated/index';
+import { HplBuzzGuildKit, IDL } from './../target/types/hpl_buzz_guild_kit';
 import { Honeycomb, identityModule } from '@honeycomb-protocol/hive-control';
+import { AnchorProvider, Program, Wallet } from '@project-serum/anchor';
 
 
 // CONFIGS
@@ -81,7 +83,6 @@ export const getDependencies = (
   const member_keypair = Keypair.fromSecretKey(Uint8Array.from(member));
 
   const connection = new Connection(config.endpoint);
-
   const honeycomb = new Honeycomb(connection);
 
   const chiefIdenityModule = identityModule(keypair);

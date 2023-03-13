@@ -13,6 +13,9 @@ pub struct Guild {
     /// the key to identify which project does it belong to
     pub guild_kit: Pubkey,
 
+    /// the matrix identifier for the guild
+    pub matrix_id: String,
+
     /// the name of the guild
     pub name: String,
 

@@ -16,6 +16,7 @@ import * as beet from '@metaplex-foundation/beet'
  */
 export type GuildKitArgs = {
   kitKey: web3.PublicKey
+  matrixId: string
   project: web3.PublicKey
   bump: number
 }
@@ -31,6 +32,7 @@ export const guildKitDiscriminator = [46, 171, 148, 99, 107, 19, 187, 190]
 export class GuildKit implements GuildKitArgs {
   private constructor(
     readonly kitKey: web3.PublicKey,
+    readonly matrixId: string,
     readonly project: web3.PublicKey,
     readonly bump: number
   ) {}
@@ -39,7 +41,7 @@ export class GuildKit implements GuildKitArgs {
    * Creates a {@link GuildKit} instance from the provided args.
    */
   static fromArgs(args: GuildKitArgs) {
-    return new GuildKit(args.kitKey, args.project, args.bump)
+    return new GuildKit(args.kitKey, args.matrixId, args.project, args.bump)
   }
 
   /**
@@ -109,34 +111,36 @@ export class GuildKit implements GuildKitArgs {
 
   /**
    * Returns the byteSize of a {@link Buffer} holding the serialized data of
-   * {@link GuildKit}
+   * {@link GuildKit} for the provided args.
+   *
+   * @param args need to be provided since the byte size for this account
+   * depends on them
    */
-  static get byteSize() {
-    return guildKitBeet.byteSize
+  static byteSize(args: GuildKitArgs) {
+    const instance = GuildKit.fromArgs(args)
+    return guildKitBeet.toFixedFromValue({
+      accountDiscriminator: guildKitDiscriminator,
+      ...instance,
+    }).byteSize
   }
 
   /**
    * Fetches the minimum balance needed to exempt an account holding
    * {@link GuildKit} data from rent
    *
+   * @param args need to be provided since the byte size for this account
+   * depends on them
    * @param connection used to retrieve the rent exemption information
    */
   static async getMinimumBalanceForRentExemption(
+    args: GuildKitArgs,
     connection: web3.Connection,
     commitment?: web3.Commitment
   ): Promise<number> {
     return connection.getMinimumBalanceForRentExemption(
-      GuildKit.byteSize,
+      GuildKit.byteSize(args),
       commitment
     )
-  }
-
-  /**
-   * Determines if the provided {@link Buffer} has the correct byte size to
-   * hold {@link GuildKit} data.
-   */
-  static hasCorrectByteSize(buf: Buffer, offset = 0) {
-    return buf.byteLength - offset === GuildKit.byteSize
   }
 
   /**
@@ -146,6 +150,7 @@ export class GuildKit implements GuildKitArgs {
   pretty() {
     return {
       kitKey: this.kitKey.toBase58(),
+      matrixId: this.matrixId,
       project: this.project.toBase58(),
       bump: this.bump,
     }
@@ -156,7 +161,7 @@ export class GuildKit implements GuildKitArgs {
  * @category Accounts
  * @category generated
  */
-export const guildKitBeet = new beet.BeetStruct<
+export const guildKitBeet = new beet.FixableBeetStruct<
   GuildKit,
   GuildKitArgs & {
     accountDiscriminator: number[] /* size: 8 */
@@ -165,6 +170,7 @@ export const guildKitBeet = new beet.BeetStruct<
   [
     ['accountDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
     ['kitKey', beetSolana.publicKey],
+    ['matrixId', beet.utf8String],
     ['project', beetSolana.publicKey],
     ['bump', beet.u8],
   ],

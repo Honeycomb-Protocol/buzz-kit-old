@@ -21,6 +21,7 @@ export type GuildArgs = {
   guildId: web3.PublicKey
   bump: number
   guildKit: web3.PublicKey
+  matrixId: string
   name: string
   members: Member[]
   visibility: GuildVisibility
@@ -40,6 +41,7 @@ export class Guild implements GuildArgs {
     readonly guildId: web3.PublicKey,
     readonly bump: number,
     readonly guildKit: web3.PublicKey,
+    readonly matrixId: string,
     readonly name: string,
     readonly members: Member[],
     readonly visibility: GuildVisibility,
@@ -54,6 +56,7 @@ export class Guild implements GuildArgs {
       args.guildId,
       args.bump,
       args.guildKit,
+      args.matrixId,
       args.name,
       args.members,
       args.visibility,
@@ -169,6 +172,7 @@ export class Guild implements GuildArgs {
       guildId: this.guildId.toBase58(),
       bump: this.bump,
       guildKit: this.guildKit.toBase58(),
+      matrixId: this.matrixId,
       name: this.name,
       members: this.members,
       visibility: 'GuildVisibility.' + GuildVisibility[this.visibility],
@@ -193,6 +197,7 @@ export const guildBeet = new beet.FixableBeetStruct<
     ['guildId', beetSolana.publicKey],
     ['bump', beet.u8],
     ['guildKit', beetSolana.publicKey],
+    ['matrixId', beet.utf8String],
     ['name', beet.utf8String],
     ['members', beet.array(memberBeet)],
     ['visibility', guildVisibilityBeet],

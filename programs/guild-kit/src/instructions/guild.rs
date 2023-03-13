@@ -86,9 +86,15 @@ pub struct CreateGuild<'info> {
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
 pub struct CreateGuildArgs {
     pub name: String,
+    pub matrix_id: String,
     pub chief_refrence: IndexedReference,
     pub visibility: GuildVisibility,
     pub joining_criteria: JoiningCriteria,
+}
+
+#[event]
+pub struct CreateGuildEvent {
+    pub guild: Pubkey,
 }
 
 /// Create a new guild
@@ -115,6 +121,7 @@ pub fn create_guild(ctx: Context<CreateGuild>, args: CreateGuildArgs) -> Result<
 
     // set the guild configs    
     guild.name = args.name;
+    guild.matrix_id = args.matrix_id;
     guild.members.push(Member {
         role: MemberRole::Chief,
         reference: args.chief_refrence.clone(),
@@ -127,6 +134,11 @@ pub fn create_guild(ctx: Context<CreateGuild>, args: CreateGuildArgs) -> Result<
     // set the membership lock configs
     membership_lock.guild = ctx.accounts.guild.key();
     membership_lock.member_reference = args.chief_refrence;
+
+    // setting up an event for the guild creation
+    emit!(CreateGuildEvent {
+        guild: ctx.accounts.guild.key()
+    });
 
     msg!("GUILD CREATED");
     Ok(())

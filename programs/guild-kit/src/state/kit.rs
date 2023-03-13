@@ -5,6 +5,9 @@ pub struct GuildKit {
     /// the key to identify which project does it belong to
     pub kit_key: Pubkey,
 
+    /// the matrix identifier for the guild_kit
+    pub matrix_id: String,
+
     /// the key to identify which project does it belong to
     pub project: Pubkey,
 

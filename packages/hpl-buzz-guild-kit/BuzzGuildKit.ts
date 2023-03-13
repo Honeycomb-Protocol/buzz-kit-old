@@ -43,9 +43,13 @@ export class BuzzGuildKit implements Module {
         return new BuzzGuildKit(address, guildKit);
     }
 
-    public static async new(honeycomb: Honeycomb) {
+    public static async new(honeycomb: Honeycomb, matrixId: string) {
         return createGuildKit(honeycomb, {
+            args: {
+                matrixId
+            },
             programId: PROGRAM_ID,
+
         });
     }
 

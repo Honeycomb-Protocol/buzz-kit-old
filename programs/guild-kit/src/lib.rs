@@ -13,7 +13,7 @@ pub mod hpl_buzz_guild_kit {
     use super::*;
 
     // GUILD KIT
-    pub fn create_guild_kit(ctx: Context<CreateGuildKit>) -> Result<()> {
+    pub fn create_guild_kit(ctx: Context<CreateGuildKit>, args: CreateGuildKitArgs) -> Result<()> {
         hpl_hive_control::cpi::add_remove_service(
             CpiContext::new(
                 ctx.accounts.hive_control.to_account_info(),
@@ -39,7 +39,7 @@ pub mod hpl_buzz_guild_kit {
             },
         )?;
 
-        instructions::create_guild_kit(ctx)
+        instructions::create_guild_kit(ctx, args)
     }
 
     // GUILD

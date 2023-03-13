@@ -130,13 +130,13 @@ pub struct AcceptInvitation<'info> {
     pub guild: Box<Account<'info, Guild>>,
 
     /// Address container that stores the mint addresss of the collections
-    #[account(mut, close = chief, constraint = invitation.invited_by == chief.key())]
+    #[account(mut, close = invited_by)]
     pub invitation: Box<Account<'info, Invitation>>,
 
     /// the chief account that invited
     /// CHECK: This is not dangerous because we don't read or write from this account
-    #[account(mut)]
-    pub chief: AccountInfo<'info>,
+    #[account(mut, address = invitation.invited_by)]
+    pub invited_by: AccountInfo<'info>,
 
     /// Address container that stores the mint addresss of the collections
     #[account(

@@ -17,7 +17,7 @@ const buzzguild = async (
 
     if (action === "create-kit") {
         try {
-            const guildKit = await BuzzGuildKit.new(honeycomb);
+            const guildKit = await BuzzGuildKit.new(honeycomb, "testing ");
 
             console.log(guildKit.response.signature, "TXID");
             setDeployments({
@@ -45,6 +45,7 @@ const buzzguild = async (
                         chiefRefrence: honeycomb.project().findMintReference(chiefNftMint),
                         joiningCriteria: JoiningCriteria.Anyone,
                         visibility: GuildVisibility.Public,
+                        matrixId: "test",
                     }
                 });
                 console.log(guild.guildAddress.toBase58(), "Address");
@@ -236,4 +237,4 @@ const buzzguild = async (
 // remove-member 
 // create-request 
 // accept-request
-buzzguild("remove-member", "devnet");
+buzzguild("create-kit", "devnet");

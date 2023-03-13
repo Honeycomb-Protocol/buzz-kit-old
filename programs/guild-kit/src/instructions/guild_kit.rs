@@ -61,17 +61,33 @@ pub struct CreateGuildKit<'info> {
     pub hive_control: Program<'info, HplHiveControl>,
 }
 
-// #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
-// pub struct CreateGuildKitArgs {}
+#[event]
+pub struct CreateGuildKitEvent {
+    pub kit_key: Pubkey,
+}
 
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+
+pub struct CreateGuildKitArgs {
+    pub matrix_id: String,
+}
 /// Create a new guild_kit
-pub fn create_guild_kit(ctx: Context<CreateGuildKit>) -> Result<()> {
+pub fn create_guild_kit(ctx: Context<CreateGuildKit>, args: CreateGuildKitArgs) -> Result<()> {
     let guild_kit = &mut ctx.accounts.guild_kit;
 
     guild_kit.set_defaults();
+    
     guild_kit.kit_key = ctx.accounts.kit_key.key();
+    guild_kit.matrix_id = args.matrix_id;
     guild_kit.project = ctx.accounts.project.key();
     guild_kit.bump = ctx.bumps["guild_kit"];
+
+
+    emit!(CreateGuildKitEvent {
+        kit_key: guild_kit.kit_key,
+        
+    });
 
     Ok(())
 }

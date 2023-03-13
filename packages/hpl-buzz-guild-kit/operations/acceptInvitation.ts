@@ -37,7 +37,7 @@ export function createAcceptInvitationCtx(args: CreateAcceptInvitationCtx): Oper
             memberAddressContainer,
             memberAccount,
             membershipLock,
-            chief: args.chief,
+            invitedBy: args.chief,
             payer: args.payer,
             authority: args.authority,
             vault: VAULT,

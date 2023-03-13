@@ -1,6 +1,7 @@
 export * from './AcceptInvitationArgs'
 export * from './AcceptRequestArgs'
 export * from './CreateGuildArgs'
+export * from './CreateGuildKitArgs'
 export * from './CreateRequestArgs'
 export * from './GuildVisibility'
 export * from './IndexedReference'
