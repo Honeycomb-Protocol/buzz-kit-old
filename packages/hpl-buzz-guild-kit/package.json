@@ -2,9 +2,12 @@
   "name": "@honeycomb-protocol/buzz-guildkit",
   "version": "1.0.0",
   "private": false,
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@honeycomb-protocol/hive-control": "^0.0.35",
     "@project-serum/anchor": "^0.26.0",
