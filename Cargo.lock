@@ -1031,7 +1031,7 @@ dependencies = [
 
 [[package]]
 name = "hpl-buzz-guild-kit"
-version = "0.0.1"
+version = "1.0.0"
 dependencies = [
  "anchor-lang",
  "anchor-spl",

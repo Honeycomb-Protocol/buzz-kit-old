@@ -5,21 +5,6 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "license": "MIT",
-  "scripts": {
-    "prepare": "husky install",
-    "copyPackages": "copyfiles -u 1 packages/**/package.json dist/",
-    "precommit": "node ./scripts/precommit.js && git add programs/**/Cargo.toml && git add Cargo.lock",
-    "prepush": "echo LFG",
-    "publishall": "node ./scripts/publishall.js",
-    "compile": "tsc",
-    "postcompile": "yarn copyPackages",
-    "build:program": "anchor build",
-    "build:sdk": "yarn solita && tsc",
-    "build": "yarn build:program & yarn build:sdk",
-    "deploy": "anchor deploy",
-    "build-deploy": "yarn build && yarn deploy",
-    "scripts": "ts-node ./scripts/index.ts"
-  },
   "dependencies": {
     "@honeycomb-protocol/hive-control": "^0.0.35",
     "@project-serum/anchor": "^0.26.0",
