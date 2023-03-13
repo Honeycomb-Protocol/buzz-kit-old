@@ -9,4 +9,5 @@ yarn.lock
 package-lock.json
 .crates
 key.json
+member.json
 dist
